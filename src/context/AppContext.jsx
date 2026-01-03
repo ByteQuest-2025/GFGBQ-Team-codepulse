@@ -9,6 +9,7 @@ const AppContext = createContext();
  */
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
   const [language, setLanguage] = useState('en');
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,10 +18,12 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const loadInitialState = () => {
       const savedUser = storage.get(STORAGE_KEYS.USER);
+      const savedToken = storage.get(STORAGE_KEYS.AUTH_TOKEN);
       const savedLanguage = storage.get(STORAGE_KEYS.LANGUAGE, 'en');
       const onboardingComplete = storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
 
       if (savedUser) setUser(savedUser);
+      if (savedToken) setAuthToken(savedToken);
       setLanguage(savedLanguage);
       setIsOnboardingComplete(onboardingComplete);
       setIsLoading(false);
@@ -33,6 +36,21 @@ export const AppProvider = ({ children }) => {
   const updateUser = (userData) => {
     setUser(userData);
     storage.set(STORAGE_KEYS.USER, userData);
+  };
+
+  // Mock login (client-side)
+  const login = ({ name, phone }) => {
+    const token = `token-${Date.now()}`;
+    const userData = {
+      name,
+      phone,
+      joinDate: new Date().toISOString()
+    };
+
+    setUser(userData);
+    setAuthToken(token);
+    storage.set(STORAGE_KEYS.USER, userData);
+    storage.set(STORAGE_KEYS.AUTH_TOKEN, token);
   };
 
   // Update language
@@ -50,13 +68,19 @@ export const AppProvider = ({ children }) => {
   // Logout
   const logout = () => {
     setUser(null);
+    setAuthToken(null);
     storage.remove(STORAGE_KEYS.USER);
     storage.remove(STORAGE_KEYS.AUTH_TOKEN);
+    storage.remove(STORAGE_KEYS.ONBOARDING_COMPLETE);
+    setIsOnboardingComplete(false);
   };
 
   const value = {
     user,
     updateUser,
+    login,
+    authToken,
+    isAuthenticated: Boolean(authToken),
     language,
     updateLanguage,
     isOnboardingComplete,

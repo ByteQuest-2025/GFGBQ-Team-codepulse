@@ -11,6 +11,7 @@ import InvestPage from './pages/InvestPage';
 import LearnPage from './pages/LearnPage';
 import PassbookPage from './pages/PassbookPage';
 import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
 
 // Loading Component
 import LoadingSpinner from './components/common/LoadingSpinner';
@@ -21,20 +22,28 @@ import './App.css';
  * Protected Route Component
  */
 const ProtectedRoute = ({ children }) => {
-  const { isOnboardingComplete, isLoading } = useApp();
+  const { isAuthenticated, isOnboardingComplete, isLoading } = useApp();
 
   if (isLoading) {
     return <LoadingSpinner message="Loading..." />;
   }
 
-  return isOnboardingComplete ? children : <Navigate to="/onboarding" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isOnboardingComplete) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return children;
 };
 
 /**
  * Main App Router
  */
 function AppRouter() {
-  const { isOnboardingComplete, completeOnboarding, updateLanguage } = useApp();
+  const { isAuthenticated, isOnboardingComplete, completeOnboarding, updateLanguage } = useApp();
 
   const handleOnboardingComplete = (selectedLanguage) => {
     updateLanguage(selectedLanguage);
@@ -48,11 +57,25 @@ function AppRouter() {
         <Route
           path="/onboarding"
           element={
-            isOnboardingComplete ? (
-              <Navigate to="/" />
+            !isAuthenticated ? (
+              <Navigate to="/login" replace />
+            ) : isOnboardingComplete ? (
+              <Navigate to="/" replace />
             ) : (
               <OnboardingPage onComplete={handleOnboardingComplete} />
             )
+          }
+        />
+
+        {/* Login Route */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? isOnboardingComplete
+                ? <Navigate to="/" replace />
+                : <Navigate to="/onboarding" replace />
+              : <LoginPage />
           }
         />
 

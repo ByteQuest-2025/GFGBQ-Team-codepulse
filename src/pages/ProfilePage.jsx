@@ -11,7 +11,7 @@ import BottomNav from '../components/common/BottomNav';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { getPortfolioSummary } = useInvestment();
-  const { user, language } = useApp();
+  const { user, language, logout } = useApp();
   const [activeNav, setActiveNav] = React.useState('profile');
 
   const summary = getPortfolioSummary();
@@ -99,7 +99,13 @@ const ProfilePage = () => {
         </div>
 
         {/* Logout Button */}
-        <button className="w-full mt-6 py-3 bg-red-50 text-red-600 rounded-lg font-semibold border-2 border-red-200 hover:bg-red-100 transition-all">
+        <button
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          className="w-full mt-6 py-3 bg-red-50 text-red-600 rounded-lg font-semibold border-2 border-red-200 hover:bg-red-100 transition-all"
+        >
           🚪 Logout
         </button>
 
