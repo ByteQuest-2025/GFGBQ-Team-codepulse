@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInvestment } from '../context/InvestmentContext';
 import PortfolioSummary from '../components/dashboard/PortfolioSummary';
 import InvestmentList from '../components/dashboard/InvestmentList';
 import BottomNav from '../components/common/BottomNav';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 /**
  * Home/Dashboard Page
@@ -11,6 +13,12 @@ import BottomNav from '../components/common/BottomNav';
 const HomePage = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('home');
+  const { portfolio, getPortfolioSummary, isLoading, updateInvestmentValues } = useInvestment();
+
+  // Update investment values on mount
+  useEffect(() => {
+    updateInvestmentValues();
+  }, []);
 
   const handleNavigation = (page) => {
     setActiveNav(page);
@@ -21,25 +29,11 @@ const HomePage = () => {
     }
   };
 
-  // Mock data - will be replaced with real data from context/API
-  const portfolio = [
-    {
-      id: 1,
-      name: 'Post Office Savings',
-      amount: 500,
-      currentValue: 522,
-      startDate: '2025-11-15',
-      returns: 4.0
-    },
-    {
-      id: 2,
-      name: 'Public Provident Fund (PPF)',
-      amount: 1000,
-      currentValue: 1058,
-      startDate: '2025-10-01',
-      returns: 7.1
-    }
-  ];
+  const summary = getPortfolioSummary();
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading your portfolio..." />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -48,7 +42,11 @@ const HomePage = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-xl font-bold">Welcome Back! 👋</h1>
-            <p className="text-sm opacity-90 mt-1">Let's grow your savings</p>
+            <p className="text-sm opacity-90 mt-1">
+              {portfolio.length > 0 
+                ? `${portfolio.length} active investment${portfolio.length > 1 ? 's' : ''}` 
+                : "Let's start your investment journey"}
+            </p>
           </div>
           <button className="p-2 bg-white bg-opacity-20 rounded-lg">
             🔔

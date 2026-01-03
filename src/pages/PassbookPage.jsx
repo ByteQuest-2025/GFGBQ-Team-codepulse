@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInvestment } from '../context/InvestmentContext';
 import BottomNav from '../components/common/BottomNav';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 /**
  * Passbook Page
@@ -8,6 +10,7 @@ import BottomNav from '../components/common/BottomNav';
  */
 const PassbookPage = () => {
   const navigate = useNavigate();
+  const { transactions, getPortfolioSummary, isLoading } = useInvestment();
   const [activeNav, setActiveNav] = React.useState('passbook');
 
   const handleNavigation = (page) => {
@@ -19,45 +22,11 @@ const PassbookPage = () => {
     }
   };
 
-  // Mock transaction data
-  const transactions = [
-    {
-      id: 1,
-      type: 'credit',
-      title: 'Investment Added',
-      investment: 'Post Office Savings',
-      amount: 500,
-      date: '2025-12-01',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      type: 'credit',
-      title: 'Investment Added',
-      investment: 'PPF Account',
-      amount: 1000,
-      date: '2025-11-15',
-      status: 'completed'
-    },
-    {
-      id: 3,
-      type: 'interest',
-      title: 'Interest Earned',
-      investment: 'Post Office Savings',
-      amount: 22,
-      date: '2025-12-31',
-      status: 'completed'
-    },
-    {
-      id: 4,
-      type: 'credit',
-      title: 'Investment Added',
-      investment: 'PPF Account',
-      amount: 500,
-      date: '2025-12-10',
-      status: 'completed'
-    }
-  ];
+  const summary = getPortfolioSummary();
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading transactions..." />;
+  }
 
   const getIcon = (type) => {
     switch (type) {
@@ -72,13 +41,8 @@ const PassbookPage = () => {
     }
   };
 
-  const totalInvested = transactions
-    .filter(t => t.type === 'credit')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalInterest = transactions
-    .filter(t => t.type === 'interest')
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalInvested = summary.totalInvested;
+  const totalInterest = summary.totalGain;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

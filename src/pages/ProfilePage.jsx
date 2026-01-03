@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInvestment } from '../context/InvestmentContext';
+import { useApp } from '../context/AppContext';
 import BottomNav from '../components/common/BottomNav';
 
 /**
@@ -8,7 +10,11 @@ import BottomNav from '../components/common/BottomNav';
  */
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const { getPortfolioSummary } = useInvestment();
+  const { user, language } = useApp();
   const [activeNav, setActiveNav] = React.useState('profile');
+
+  const summary = getPortfolioSummary();
 
   const handleNavigation = (page) => {
     setActiveNav(page);
@@ -19,11 +25,11 @@ const ProfilePage = () => {
     }
   };
 
-  const user = {
-    name: 'Ramesh Kumar',
-    phone: '+91 98765 43210',
-    language: 'Hindi',
-    joinDate: '2025-11-01'
+  const userInfo = user || {
+    name: 'Guest User',
+    phone: 'Not logged in',
+    language: language || 'English',
+    joinDate: new Date().toISOString()
   };
 
   const menuItems = [
@@ -44,10 +50,10 @@ const ProfilePage = () => {
           <div className="w-20 h-20 bg-white rounded-full mx-auto mb-3 flex items-center justify-center text-4xl">
             👤
           </div>
-          <h2 className="text-xl font-bold">{user.name}</h2>
-          <p className="text-sm opacity-90 mt-1">{user.phone}</p>
+          <h2 className="text-xl font-bold">{userInfo.name}</h2>
+          <p className="text-sm opacity-90 mt-1">{userInfo.phone}</p>
           <p className="text-xs opacity-75 mt-1">
-            Member since {new Date(user.joinDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+            Member since {new Date(userInfo.joinDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
           </p>
         </div>
       </div>
@@ -56,16 +62,16 @@ const ProfilePage = () => {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
-            <div className="text-2xl font-bold text-green-600">₹2,080</div>
+            <div className="text-2xl font-bold text-green-600">₹{summary.totalInvested.toLocaleString('en-IN')}</div>
             <div className="text-xs text-gray-500 mt-1">Total Invested</div>
           </div>
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
-            <div className="text-2xl font-bold text-blue-600">2</div>
+            <div className="text-2xl font-bold text-blue-600">{summary.investmentCount}</div>
             <div className="text-xs text-gray-500 mt-1">Investments</div>
           </div>
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
-            <div className="text-2xl font-bold text-purple-600">3</div>
-            <div className="text-xs text-gray-500 mt-1">Lessons Done</div>
+            <div className="text-2xl font-bold text-purple-600">₹{Math.round(summary.totalGain).toLocaleString('en-IN')}</div>
+            <div className="text-xs text-gray-500 mt-1">Returns</div>
           </div>
         </div>
 
