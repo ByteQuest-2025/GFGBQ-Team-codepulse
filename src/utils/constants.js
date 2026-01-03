@@ -55,15 +55,6 @@ export const API_ENDPOINTS = {
   LESSONS: '/lessons'
 };
 
-// Firebase Collections
-export const FIREBASE_COLLECTIONS = {
-  USERS: 'users',
-  INVESTMENTS: 'investments',
-  TRANSACTIONS: 'transactions',
-  LESSONS: 'lessons',
-  PROGRESS: 'progress'
-};
-
 // Educational Content Categories
 export const LESSON_CATEGORIES = {
   BASICS: 'basics',

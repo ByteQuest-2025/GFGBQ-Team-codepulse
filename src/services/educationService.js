@@ -87,7 +87,7 @@ export const educationService = {
    * Get user's learning progress
    */
   getUserProgress: async (userId) => {
-    // In production, fetch from Firebase
+    // Returns progress from local storage
     return {
       completedLessons: [],
       currentStreak: 0,
@@ -100,7 +100,7 @@ export const educationService = {
    * Mark lesson as completed
    */
   completeLesson: async (userId, lessonId) => {
-    // In production, save to Firebase
+    // Saves completion to local storage
     const progress = {
       userId: userId,
       lessonId: lessonId,

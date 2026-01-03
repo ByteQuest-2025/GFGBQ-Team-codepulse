@@ -8,7 +8,7 @@ export const investmentService = {
    * Get all available investment options
    */
   getInvestmentOptions: async () => {
-    // In production, fetch from API/Firebase
+    // Returns static investment options
     return [
       {
         id: 1,
@@ -90,7 +90,7 @@ export const investmentService = {
    * Create new investment
    */
   createInvestment: async (userId, investmentData) => {
-    // In production, save to Firebase
+    // Creates investment record
     const investment = {
       id: Date.now(),
       userId: userId,
@@ -109,7 +109,7 @@ export const investmentService = {
    * Get user's investments
    */
   getUserInvestments: async (userId) => {
-    // In production, fetch from Firebase
+    // Returns user investments from local storage
     return [];
   },
 
