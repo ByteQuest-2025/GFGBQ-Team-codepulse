@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import FinancialLesson from '../components/education/FinancialLesson';
 import BottomNav from '../components/common/BottomNav';
+import { useEducation } from '../context/EducationContext';
 
 /**
  * Learn Page
@@ -9,6 +10,7 @@ import BottomNav from '../components/common/BottomNav';
  */
 const LearnPage = () => {
   const navigate = useNavigate();
+  const { progress, completeLesson, isLessonCompleted } = useEducation();
   const [activeNav, setActiveNav] = React.useState('learn');
   const [selectedTopic, setSelectedTopic] = React.useState(null);
 
@@ -23,44 +25,44 @@ const LearnPage = () => {
 
   const topics = [
     {
-      id: 1,
+      id: 'topic-1',
       title: 'What is Investing?',
       icon: '💰',
       difficulty: 'Beginner',
       duration: '3 min',
-      completed: false
+      completed: isLessonCompleted('topic-1')
     },
     {
-      id: 2,
+      id: 'topic-2',
       title: 'Safe vs Risky Investments',
       icon: '⚖️',
       difficulty: 'Beginner',
       duration: '4 min',
-      completed: false
+      completed: isLessonCompleted('topic-2')
     },
     {
-      id: 3,
+      id: 'topic-3',
       title: 'Understanding Interest',
       icon: '📊',
       difficulty: 'Beginner',
       duration: '3 min',
-      completed: false
+      completed: isLessonCompleted('topic-3')
     },
     {
-      id: 4,
+      id: 'topic-4',
       title: 'Power of Starting Small',
       icon: '🌱',
       difficulty: 'Beginner',
       duration: '5 min',
-      completed: false
+      completed: isLessonCompleted('topic-4')
     },
     {
-      id: 5,
+      id: 'topic-5',
       title: 'Tax Benefits Explained',
       icon: '🏛️',
       difficulty: 'Intermediate',
       duration: '6 min',
-      completed: false
+      completed: isLessonCompleted('topic-5')
     }
   ];
 
@@ -111,6 +113,7 @@ const LearnPage = () => {
           <FinancialLesson
             lesson={sampleLesson}
             onComplete={() => {
+              completeLesson(selectedTopic.id);
               alert('Lesson completed! 🎉');
               setSelectedTopic(null);
             }}
@@ -168,12 +171,12 @@ const LearnPage = () => {
           <div className="flex justify-between items-center">
             <div>
               <h3 className="font-semibold mb-1">Your Progress</h3>
-              <p className="text-sm opacity-90">0 of {topics.length} lessons completed</p>
+              <p className="text-sm opacity-90">{progress.completedLessons.length} of {topics.length} lessons completed</p>
             </div>
             <span className="text-4xl">🎯</span>
           </div>
           <div className="w-full bg-white bg-opacity-30 rounded-full h-2 mt-3">
-            <div className="bg-white h-2 rounded-full" style={{ width: '0%' }}></div>
+            <div className="bg-white h-2 rounded-full" style={{ width: `${(progress.completedLessons.length / topics.length) * 100}%` }}></div>
           </div>
         </div>
       </div>
