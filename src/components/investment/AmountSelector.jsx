@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+
+/**
+ * Amount Selection Component
+ * Allows users to invest small amounts easily
+ */
+const AmountSelector = ({ minAmount = 10, maxAmount = 10000, onAmountSelect }) => {
+  const [amount, setAmount] = useState(minAmount);
+  const [customInput, setCustomInput] = useState('');
+
+  const quickAmounts = [10, 50, 100, 500, 1000, 2000];
+
+  const handleQuickSelect = (value) => {
+    setAmount(value);
+    setCustomInput('');
+    onAmountSelect(value);
+  };
+
+  const handleCustomInput = (value) => {
+    const numValue = parseInt(value) || 0;
+    if (numValue >= minAmount && numValue <= maxAmount) {
+      setAmount(numValue);
+      onAmountSelect(numValue);
+    }
+    setCustomInput(value);
+  };
+
+  return (
+    <div className="p-6 bg-white rounded-lg">
+      <h3 className="text-xl font-semibold mb-4">How much do you want to invest?</h3>
+      
+      <div className="text-center mb-6">
+        <div className="text-4xl font-bold text-green-600 mb-2">
+          ₹{amount}
+        </div>
+        <p className="text-sm text-gray-500">
+          Minimum: ₹{minAmount} • Maximum: ₹{maxAmount}
+        </p>
+      </div>
+
+      <div className="mb-6">
+        <label className="text-sm text-gray-600 mb-2 block">Quick Select</label>
+        <div className="grid grid-cols-3 gap-2">
+          {quickAmounts.map((value) => (
+            <button
+              key={value}
+              onClick={() => handleQuickSelect(value)}
+              className={`py-3 rounded-lg border-2 font-semibold transition-all ${
+                amount === value && !customInput
+                  ? 'border-green-600 bg-green-50 text-green-700'
+                  : 'border-gray-200 hover:border-green-300'
+              }`}
+            >
+              ₹{value}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="text-sm text-gray-600 mb-2 block">Or Enter Custom Amount</label>
+        <input
+          type="number"
+          value={customInput}
+          onChange={(e) => handleCustomInput(e.target.value)}
+          placeholder={`Enter amount (₹${minAmount} - ₹${maxAmount})`}
+          className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none"
+          min={minAmount}
+          max={maxAmount}
+        />
+      </div>
+
+      <div className="mt-6 bg-blue-50 p-4 rounded-lg">
+        <p className="text-sm text-blue-700">
+          💡 <strong>Tip:</strong> Start small! You can always invest more later.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default AmountSelector;
