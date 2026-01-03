@@ -111,13 +111,15 @@ export const InvestmentProvider = ({ children }) => {
   // Update investment value (can be called periodically)
   const updateInvestmentValues = () => {
     const updatedPortfolio = portfolio.map(investment => {
-      // Calculate daily rate from annual rate
-      const dailyRate = investment.returns / 365;
+      // Calculate compound interest based on actual days elapsed
       const daysSinceStart = Math.floor(
         (Date.now() - new Date(investment.startDate).getTime()) / (1000 * 60 * 60 * 24)
       );
       
-      const currentValue = investment.amount * Math.pow(1 + investment.returns / 100, daysSinceStart / 365);
+      // Compound interest formula: A = P(1 + r/100)^t
+      // where t is time in years (daysSinceStart / 365)
+      const yearsFraction = daysSinceStart / 365;
+      const currentValue = investment.amount * Math.pow(1 + investment.returns / 100, yearsFraction);
       
       return {
         ...investment,

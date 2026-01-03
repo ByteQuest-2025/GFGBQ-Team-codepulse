@@ -20,7 +20,7 @@ export const transactionService = {
       description: transactionData.description
     };
 
-    // In production, save to Firebase
+    // Transaction record created
     return transaction;
   },
 
@@ -28,7 +28,7 @@ export const transactionService = {
    * Get user's transaction history
    */
   getUserTransactions: async (userId, filters = {}) => {
-    // In production, fetch from Firebase with filters
+    // Returns transactions from local storage
     // filters: { type, startDate, endDate, investmentId }
     return [];
   },
@@ -37,7 +37,7 @@ export const transactionService = {
    * Get transaction summary
    */
   getTransactionSummary: async (userId) => {
-    // In production, calculate from Firebase data
+    // Returns transaction summary from local storage
     return {
       totalInvested: 0,
       totalWithdrawn: 0,

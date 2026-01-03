@@ -10,8 +10,20 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
  */
 const PassbookPage = () => {
   const navigate = useNavigate();
-  const { transactions, getPortfolioSummary, isLoading } = useInvestment();
+  const { transactions, getPortfolioSummary, isLoading, updateInvestmentValues } = useInvestment();
   const [activeNav, setActiveNav] = React.useState('passbook');
+  const [filter, setFilter] = React.useState('all'); // Add filter state
+
+  // Auto-refresh for updated values
+  React.useEffect(() => {
+    updateInvestmentValues();
+    
+    const interval = setInterval(() => {
+      updateInvestmentValues();
+    }, 10000); // 0.1 minutes
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const handleNavigation = (page) => {
     setActiveNav(page);
@@ -44,6 +56,14 @@ const PassbookPage = () => {
   const totalInvested = summary.totalInvested;
   const totalInterest = summary.totalGain;
 
+  // Filter transactions based on selected filter
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (filter === 'all') return true;
+    if (filter === 'investments') return transaction.type === 'credit';
+    if (filter === 'interest') return transaction.type === 'interest';
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="bg-green-600 text-white p-4">
@@ -66,20 +86,47 @@ const PassbookPage = () => {
 
         {/* Filter Buttons */}
         <div className="flex space-x-2 mb-4">
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold">
+          <button 
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
+              filter === 'all' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
             All
           </button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-semibold">
+          <button 
+            onClick={() => setFilter('investments')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
+              filter === 'investments' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
             Investments
           </button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-semibold">
+          <button 
+            onClick={() => setFilter('interest')}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
+              filter === 'interest' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
             Interest
           </button>
         </div>
 
         {/* Transactions List */}
         <div className="space-y-3">
-          {transactions.map((transaction) => (
+          {filteredTransactions.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <span className="text-4xl mb-3 block">📭</span>
+              <p className="text-gray-500">No transactions found</p>
+            </div>
+          ) : (
+            filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="bg-white border border-gray-200 rounded-lg p-4"
@@ -111,7 +158,8 @@ const PassbookPage = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
 
         {/* Export Button */}

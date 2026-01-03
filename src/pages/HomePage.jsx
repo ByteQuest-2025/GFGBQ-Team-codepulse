@@ -15,9 +15,16 @@ const HomePage = () => {
   const [activeNav, setActiveNav] = useState('home');
   const { portfolio, getPortfolioSummary, isLoading, updateInvestmentValues } = useInvestment();
 
-  // Update investment values on mount
+  // Update investment values on mount and periodically
   useEffect(() => {
     updateInvestmentValues();
+    
+    // Auto-refresh every 5 minutes to keep values current
+    const interval = setInterval(() => {
+      updateInvestmentValues();
+    }, 300000); // 5 minutes
+    
+    return () => clearInterval(interval);
   }, []);
 
   const handleNavigation = (page) => {
