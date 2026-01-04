@@ -1,4 +1,5 @@
 import React from 'react';
+import { Home, IndianRupee, BookOpen, BookText, User } from 'lucide-react';
 
 /**
  * Bottom Navigation Bar
@@ -6,11 +7,11 @@ import React from 'react';
  */
 const BottomNav = ({ active, onNavigate }) => {
   const navItems = [
-    { id: 'home', icon: '🏠', label: 'Home' },
-    { id: 'invest', icon: '💰', label: 'Invest' },
-    { id: 'learn', icon: '📚', label: 'Learn' },
-    { id: 'passbook', icon: '📖', label: 'Passbook' },
-    { id: 'profile', icon: '👤', label: 'Profile' }
+    { id: 'home', Icon: Home, label: 'Home' },
+    { id: 'invest', Icon: IndianRupee, label: 'Invest' },
+    { id: 'learn', Icon: BookOpen, label: 'Learn' },
+    { id: 'passbook', Icon: BookText, label: 'Passbook' },
+    { id: 'profile', Icon: User, label: 'Profile' }
   ];
 
   return (
@@ -26,7 +27,7 @@ const BottomNav = ({ active, onNavigate }) => {
                 : 'text-gray-500'
             }`}
           >
-            <span className="text-2xl mb-1">{item.icon}</span>
+            <item.Icon className="w-6 h-6 mb-1" strokeWidth={2} />
             <span className="text-xs font-medium">{item.label}</span>
           </button>
         ))}

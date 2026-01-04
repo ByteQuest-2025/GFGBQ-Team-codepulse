@@ -5,6 +5,7 @@ import PortfolioSummary from '../components/dashboard/PortfolioSummary';
 import InvestmentList from '../components/dashboard/InvestmentList';
 import BottomNav from '../components/common/BottomNav';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { Home, DollarSign, BookOpen, FileText, User, IndianRupee } from 'lucide-react';
 
 /**
  * Home/Dashboard Page
@@ -72,7 +73,7 @@ const HomePage = () => {
             onClick={() => navigate('/learn')}
             className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:border-green-400 hover:shadow-md transition-all"
           >
-            <span className="text-3xl">📚</span>
+            <span className="text-3xl flex justify-center"><BookOpen/> </span>
             <div className="mt-2 font-semibold text-sm">Learn</div>
             <div className="text-xs text-gray-500">New lesson available</div>
           </button>
@@ -80,7 +81,7 @@ const HomePage = () => {
             onClick={() => navigate('/invest')}
             className="bg-white p-4 rounded-lg border border-gray-200 text-center hover:border-green-400 hover:shadow-md transition-all"
           >
-            <span className="text-3xl">🎯</span>
+            <span className="text-3xl flex justify-center"><IndianRupee/></span>
             <div className="mt-2 font-semibold text-sm">Start Investing</div>
             <div className="text-xs text-gray-500">Browse safe options</div>
           </button>
@@ -91,5 +92,13 @@ const HomePage = () => {
     </div>
   );
 };
+
+const navItems = [
+  { id: 'home', Icon: Home, label: 'Home' },
+  { id: 'invest', Icon: IndianRupee, label: 'Invest' },
+  { id: 'learn', Icon: BookOpen, label: 'Learn' },
+  { id: 'passbook', Icon: FileText, label: 'Passbook' },
+  { id: 'profile', Icon: User, label: 'Profile' }
+];
 
 export default HomePage;
