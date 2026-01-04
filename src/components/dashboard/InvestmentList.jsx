@@ -9,17 +9,21 @@ const InvestmentList = ({ investments }) => {
   const navigate = useNavigate();
   return (
     <div className="mt-6">
-      <h3 className="text-lg font-semibold mb-4">Your Investments</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-emerald-950">Your investments</h3>
+        <span className="text-xs text-emerald-900/70">Active & tracked</span>
+      </div>
       
       {investments.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <span className="text-6xl">💰</span>
-          <p className="text-gray-600 mt-4">No investments yet</p>
+        <div className="text-center py-12 rounded-2xl border border-dashed border-emerald-200 bg-white/70">
+          <span className="text-5xl">💰</span>
+          <p className="text-emerald-900/80 mt-4 font-semibold">No investments yet</p>
+          <p className="text-sm text-emerald-900/70">Start with a safe, guided option.</p>
           <button 
             onClick={() => navigate('/invest')}
-            className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all"
+            className="mt-4 px-6 py-3 rounded-full bg-emerald-900 text-white font-semibold shadow-lg shadow-emerald-900/15 hover:bg-emerald-800 transition-colors"
           >
-            Start Investing
+            Start investing
           </button>
         </div>
       ) : (
@@ -31,41 +35,41 @@ const InvestmentList = ({ investments }) => {
             return (
               <div
                 key={investment.id}
-                className="bg-white border border-gray-200 rounded-lg p-4"
+                className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 shadow-sm"
               >
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h4 className="font-semibold">{investment.name}</h4>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <h4 className="font-semibold text-emerald-950">{investment.name}</h4>
+                    <p className="text-xs text-emerald-900/70 mt-1">
                       Started: {new Date(investment.startDate).toLocaleDateString('en-IN')}
                     </p>
                   </div>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                  <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full">
                     Active
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 mt-3">
-                  <div>
-                    <div className="text-xs text-gray-500">Invested</div>
-                    <div className="font-semibold">₹{investment.amount}</div>
+                <div className="grid grid-cols-3 gap-3 mt-3">
+                  <div className="rounded-lg bg-emerald-50/60 p-3">
+                    <div className="text-xs text-emerald-900/70">Invested</div>
+                    <div className="font-semibold text-emerald-950">₹{investment.amount}</div>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-500">Current</div>
-                    <div className="font-semibold text-green-600">
+                  <div className="rounded-lg bg-emerald-50/60 p-3">
+                    <div className="text-xs text-emerald-900/70">Current</div>
+                    <div className="font-semibold text-emerald-800">
                       ₹{investment.currentValue.toFixed(2)}
                     </div>
                   </div>
-                  <div>
-                    <div className="text-xs text-gray-500">Returns</div>
-                    <div className={`font-semibold ${gain >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <div className="rounded-lg bg-emerald-50/60 p-3">
+                    <div className="text-xs text-emerald-900/70">Returns</div>
+                    <div className={`font-semibold ${gain >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
                       {gain >= 0 ? '+' : ''}{gainPercent}%
                     </div>
                   </div>
                 </div>
 
-                <button className="w-full mt-3 text-sm text-green-600 font-semibold py-2 border border-green-600 rounded-lg hover:bg-green-50 transition-all">
-                  View Details
+                <button className="w-full mt-3 text-sm text-emerald-900 font-semibold py-2 rounded-lg border border-emerald-200 hover:border-emerald-300 hover:bg-emerald-50 transition-colors">
+                  View details
                 </button>
               </div>
             );

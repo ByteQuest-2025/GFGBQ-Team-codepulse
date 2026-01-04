@@ -15,21 +15,22 @@ const languages = [
 
 const LanguageSelector = ({ selectedLanguage, onSelect }) => {
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4 text-center">Choose Your Language</h2>
-      <div className="grid grid-cols-2 gap-3">
+    <div className="rounded-3xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-8 shadow-[0_18px_60px_rgba(12,53,43,0.12)]">
+      <h2 className="text-xl sm:text-2xl font-bold text-center text-emerald-950">Choose your language</h2>
+      <p className="text-sm text-center text-emerald-900/70 mt-2">Switch anytime in settings.</p>
+      <div className="mt-6 grid grid-cols-2 gap-3">
         {languages.map((lang) => (
           <button
             key={lang.code}
             onClick={() => onSelect(lang.code)}
-            className={`p-4 rounded-lg border-2 transition-all ${
+            className={`rounded-2xl border-2 p-4 text-left transition-all shadow-sm ${
               selectedLanguage === lang.code
-                ? 'border-green-600 bg-green-50'
-                : 'border-gray-200 hover:border-green-300'
+                ? 'border-emerald-900 bg-emerald-50 shadow-emerald-900/10'
+                : 'border-emerald-100 bg-white hover:border-emerald-300'
             }`}
           >
-            <div className="text-lg font-semibold">{lang.native}</div>
-            <div className="text-xs text-gray-500">{lang.name}</div>
+            <div className="text-lg font-semibold text-emerald-950">{lang.native}</div>
+            <div className="text-xs text-emerald-900/70">{lang.name}</div>
           </button>
         ))}
       </div>

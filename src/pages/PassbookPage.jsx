@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInvestment } from '../context/InvestmentContext';
 import BottomNav from '../components/common/BottomNav';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import PageShell from '../components/common/PageShell';
 
 /**
  * Passbook Page
@@ -28,7 +29,7 @@ const PassbookPage = () => {
   const handleNavigation = (page) => {
     setActiveNav(page);
     if (page === 'home') {
-      navigate('/');
+      navigate('/home');
     } else {
       navigate(`/${page}`);
     }
@@ -65,111 +66,99 @@ const PassbookPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-green-600 text-white p-4">
-        <h1 className="text-xl font-bold">Your Passbook 📖</h1>
-        <p className="text-sm opacity-90 mt-1">All your transactions</p>
+    <PageShell
+      title="Your Passbook"
+      subtitle="All transactions in one calm, clear view."
+      actions={(
+        <button
+          className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
+          onClick={() => setFilter('all')}
+        >
+          📄 Export
+        </button>
+      )}
+    >
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+          <div className="text-xs text-emerald-900/70 mb-1">Total invested</div>
+          <div className="text-2xl font-bold text-emerald-900">₹{totalInvested}</div>
+          <p className="text-xs text-emerald-900/60 mt-1">Updated now</p>
+        </div>
+        <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
+          <div className="text-xs text-emerald-900/70 mb-1">Interest earned</div>
+          <div className="text-2xl font-bold text-emerald-800">₹{totalInterest}</div>
+          <p className="text-xs text-emerald-900/60 mt-1">All time</p>
+        </div>
       </div>
 
-      <div className="p-4">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="text-xs text-gray-500 mb-1">Total Invested</div>
-            <div className="text-xl font-bold text-green-600">₹{totalInvested}</div>
-          </div>
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            <div className="text-xs text-gray-500 mb-1">Interest Earned</div>
-            <div className="text-xl font-bold text-blue-600">₹{totalInterest}</div>
-          </div>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {[
+          { id: 'all', label: 'All' },
+          { id: 'investments', label: 'Investments' },
+          { id: 'interest', label: 'Interest' }
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setFilter(item.id)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold border transition-colors ${
+              filter === item.id
+                ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm shadow-emerald-900/20'
+                : 'bg-white text-emerald-900 border-emerald-200 hover:border-emerald-300'
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
 
-        {/* Filter Buttons */}
-        <div className="flex space-x-2 mb-4">
-          <button 
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
-              filter === 'all' 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            All
-          </button>
-          <button 
-            onClick={() => setFilter('investments')}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
-              filter === 'investments' 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            Investments
-          </button>
-          <button 
-            onClick={() => setFilter('interest')}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold ${
-              filter === 'interest' 
-                ? 'bg-green-600 text-white' 
-                : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            Interest
-          </button>
-        </div>
-
-        {/* Transactions List */}
-        <div className="space-y-3">
-          {filteredTransactions.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-              <span className="text-4xl mb-3 block">📭</span>
-              <p className="text-gray-500">No transactions found</p>
-            </div>
-          ) : (
-            filteredTransactions.map((transaction) => (
+      <div className="space-y-3">
+        {filteredTransactions.length === 0 ? (
+          <div className="text-center py-10 rounded-2xl border border-dashed border-emerald-200 bg-white/70">
+            <span className="text-5xl block mb-3">📭</span>
+            <p className="text-emerald-900/75 font-semibold">No transactions found</p>
+            <p className="text-sm text-emerald-900/60">Try changing filters or make your first investment.</p>
+          </div>
+        ) : (
+          filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="bg-white border border-gray-200 rounded-lg p-4"
+              className="rounded-2xl border border-emerald-100 bg-white/85 backdrop-blur-sm p-4 shadow-[0_10px_32px_rgba(12,53,43,0.06)]"
             >
-              <div className="flex items-start">
-                <span className="text-3xl mr-3">{getIcon(transaction.type)}</span>
+              <div className="flex items-start gap-3">
+                <span className="text-3xl">{getIcon(transaction.type)}</span>
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-semibold">{transaction.title}</h3>
+                    <h3 className="font-semibold text-emerald-950">{transaction.title}</h3>
                     <span className={`font-bold ${
-                      transaction.type === 'debit' ? 'text-red-600' : 'text-green-600'
+                      transaction.type === 'debit' ? 'text-red-600' : 'text-emerald-800'
                     }`}>
                       {transaction.type === 'debit' ? '-' : '+'}₹{transaction.amount}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600">{transaction.investment}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <span className="text-xs text-gray-500">
+                  <p className="text-sm text-emerald-900/70">{transaction.investment}</p>
+                  <div className="flex items-center justify-between mt-2 text-xs text-emerald-900/70">
+                    <span>
                       {new Date(transaction.date).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric'
                       })}
                     </span>
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                      ✓ {transaction.status}
-                    </span>
+                    <span className="rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold">✓ {transaction.status}</span>
                   </div>
                 </div>
               </div>
             </div>
           ))
-          )}
-        </div>
-
-        {/* Export Button */}
-        <button className="w-full mt-6 py-3 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-all">
-          📄 Download Statement
-        </button>
+        )}
       </div>
 
+      <button className="w-full rounded-full bg-emerald-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors">
+        📄 Download statement
+      </button>
+
       <BottomNav active={activeNav} onNavigate={handleNavigation} />
-    </div>
+    </PageShell>
   );
 };
 

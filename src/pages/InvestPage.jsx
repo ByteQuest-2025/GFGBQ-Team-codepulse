@@ -7,6 +7,7 @@ import InvestmentConfirmation from '../components/investment/InvestmentConfirmat
 import FinancialLesson from '../components/education/FinancialLesson';
 import BottomNav from '../components/common/BottomNav';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import PageShell from '../components/common/PageShell';
 
 /**
  * Investment Page
@@ -24,7 +25,7 @@ const InvestPage = () => {
   const handleNavigation = (page) => {
     setActiveNav(page);
     if (page === 'home') {
-      navigate('/');
+      navigate('/home');
     } else {
       navigate(`/${page}`);
     }
@@ -107,16 +108,35 @@ const InvestPage = () => {
     }
   };
 
+  const stepMeta = {
+    browse: {
+      title: 'Invest with confidence',
+      subtitle: 'Safe, government-backed options curated for steady growth.'
+    },
+    lesson: {
+      title: 'Quick lesson',
+      subtitle: `Understand ${selectedInvestment?.name || 'this investment'} before you proceed.`
+    },
+    amount: {
+      title: 'Choose your amount',
+      subtitle: 'Start small, stay flexible, and grow steadily.'
+    },
+    confirm: {
+      title: 'Review & confirm',
+      subtitle: 'Check the details and lock in your investment.'
+    }
+  };
+
   const renderContent = () => {
     switch (step) {
       case 'browse':
         return (
-          <div>
-            <div className="bg-green-600 text-white p-4 mb-4">
-              <h1 className="text-xl font-bold">Safe Investment Options</h1>
-              <p className="text-sm opacity-90 mt-1">All options are government-backed</p>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-6 shadow-[0_10px_40px_rgba(12,53,43,0.08)]">
+              <p className="text-sm font-semibold text-emerald-900">Curated list</p>
+              <p className="text-base text-emerald-900/75 mt-1">Government-backed, low-risk choices with transparent returns.</p>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="grid gap-4">
               {investments.map(inv => (
                 <InvestmentCard 
                   key={inv.id} 
@@ -130,76 +150,68 @@ const InvestPage = () => {
 
       case 'lesson':
         return (
-          <div className="p-4 min-h-screen flex flex-col">
+          <div className="space-y-4">
             <button
               onClick={() => setStep('browse')}
-              className="mb-4 text-green-600 font-semibold flex items-center"
+              className="text-sm font-semibold text-emerald-800 hover:text-emerald-900"
             >
-              ← Back to Options
+              ← Back to options
             </button>
-            <div className="flex-1 flex items-center">
-              <div className="w-full">
-                <h2 className="text-2xl font-bold mb-2 text-center">Quick Lesson</h2>
-                <p className="text-sm text-gray-600 text-center mb-6">
-                  Learn about {selectedInvestment?.name} before investing
-                </p>
-                <FinancialLesson 
-                  lesson={sampleLesson} 
-                  onComplete={handleLessonComplete}
-                />
-                <button
-                  onClick={handleLessonComplete}
-                  className="w-full mt-4 py-3 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-all"
-                >
-                  Skip Lesson & Continue
-                </button>
-              </div>
+            <div className="rounded-2xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-5 shadow-sm">
+              <h2 className="text-xl font-semibold text-emerald-950 text-center">Quick lesson</h2>
+              <p className="text-sm text-emerald-900/75 text-center mb-4">Learn about {selectedInvestment?.name} before investing.</p>
+              <FinancialLesson 
+                lesson={sampleLesson} 
+                onComplete={handleLessonComplete}
+              />
+              <button
+                onClick={handleLessonComplete}
+                className="w-full mt-4 py-3 rounded-full border border-emerald-200 bg-white text-emerald-900 font-semibold hover:border-emerald-300 transition-colors"
+              >
+                Skip lesson & continue
+              </button>
             </div>
           </div>
         );
 
       case 'amount':
         return (
-          <div className="p-4 min-h-screen flex flex-col">
+          <div className="space-y-4">
             <button
               onClick={() => setStep('lesson')}
-              className="mb-4 text-green-600 font-semibold flex items-center"
+              className="text-sm font-semibold text-emerald-800 hover:text-emerald-900"
             >
-              ← Back to Lesson
+              ← Back to lesson
             </button>
-            <div className="flex-1 flex items-center">
-              <div className="w-full">
-                <AmountSelector
-                  minAmount={selectedInvestment.minAmount}
-                  onAmountSelect={handleAmountSelect}
-                />
-                <button
-                  onClick={() => setStep('confirm')}
-                  disabled={amount < selectedInvestment.minAmount}
-                  className="w-full mt-6 py-3 bg-green-600 text-white rounded-lg font-semibold disabled:opacity-50 hover:bg-green-700 transition-all"
-                >
-                  Continue to Confirm
-                </button>
-              </div>
+            <div className="rounded-2xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-5 shadow-sm space-y-5">
+              <AmountSelector
+                minAmount={selectedInvestment.minAmount}
+                onAmountSelect={handleAmountSelect}
+              />
+              <button
+                onClick={() => setStep('confirm')}
+                disabled={amount < selectedInvestment.minAmount}
+                className="w-full rounded-full bg-emerald-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 disabled:opacity-50 hover:bg-emerald-800 transition-colors"
+              >
+                Continue to confirm
+              </button>
             </div>
           </div>
         );
 
       case 'confirm':
         return (
-          <div className="p-4 min-h-screen flex items-center">
-            <div className="w-full">
-              {processing ? (
-                <LoadingSpinner message="Processing your investment..." />
-              ) : (
-                <InvestmentConfirmation
-                  investment={selectedInvestment}
-                  amount={amount}
-                  onConfirm={handleConfirm}
-                  onCancel={() => setStep('amount')}
-                />
-              )}
-            </div>
+          <div className="rounded-2xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-5 shadow-sm">
+            {processing ? (
+              <LoadingSpinner message="Processing your investment..." />
+            ) : (
+              <InvestmentConfirmation
+                investment={selectedInvestment}
+                amount={amount}
+                onConfirm={handleConfirm}
+                onCancel={() => setStep('amount')}
+              />
+            )}
           </div>
         );
 
@@ -209,10 +221,13 @@ const InvestPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <PageShell
+      title={stepMeta[step].title}
+      subtitle={stepMeta[step].subtitle}
+    >
       {renderContent()}
       <BottomNav active={activeNav} onNavigate={handleNavigation} />
-    </div>
+    </PageShell>
   );
 };
 

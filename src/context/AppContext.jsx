@@ -1,7 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { storage, STORAGE_KEYS } from '../utils/storage';
+import { authService } from '../services/authService';
 
 const AppContext = createContext();
+
+const normalizeUser = (user) => {
+  if (!user) return null;
+  return {
+    ...user,
+    phone: user.phoneNumber || user.phone,
+    phoneNumber: user.phoneNumber || user.phone,
+    joinDate: user.createdAt || user.joinDate || new Date().toISOString()
+  };
+};
 
 /**
  * Global App Context Provider
@@ -14,10 +25,10 @@ export const AppProvider = ({ children }) => {
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load initial state from storage
+  // Load initial state from storage and refresh profile if token exists
   useEffect(() => {
-    const loadInitialState = () => {
-      const savedUser = storage.get(STORAGE_KEYS.USER);
+    const loadInitialState = async () => {
+      const savedUser = normalizeUser(storage.get(STORAGE_KEYS.USER));
       const savedToken = storage.get(STORAGE_KEYS.AUTH_TOKEN);
       const savedLanguage = storage.get(STORAGE_KEYS.LANGUAGE, 'en');
       const onboardingComplete = storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
@@ -26,31 +37,63 @@ export const AppProvider = ({ children }) => {
       if (savedToken) setAuthToken(savedToken);
       setLanguage(savedLanguage);
       setIsOnboardingComplete(onboardingComplete);
+
+      if (savedToken) {
+        try {
+          const profile = await authService.getProfile(savedToken);
+          const normalized = normalizeUser(profile);
+          setUser(normalized);
+          storage.set(STORAGE_KEYS.USER, normalized);
+        } catch (error) {
+          console.error('Failed to refresh profile:', error.message);
+          logout();
+        }
+      }
+
       setIsLoading(false);
     };
 
     loadInitialState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update user
   const updateUser = (userData) => {
-    setUser(userData);
-    storage.set(STORAGE_KEYS.USER, userData);
+    const normalized = normalizeUser(userData);
+    setUser(normalized);
+    storage.set(STORAGE_KEYS.USER, normalized);
   };
 
-  // Mock login (client-side)
-  const login = ({ name, phone }) => {
-    const token = `token-${Date.now()}`;
-    const userData = {
-      name,
-      phone,
-      joinDate: new Date().toISOString()
-    };
+  // Login with backend
+  const login = async ({ phoneNumber, password }) => {
+    const data = await authService.login({ phoneNumber, password });
+    const normalized = normalizeUser(data);
 
-    setUser(userData);
-    setAuthToken(token);
-    storage.set(STORAGE_KEYS.USER, userData);
-    storage.set(STORAGE_KEYS.AUTH_TOKEN, token);
+    setUser(normalized);
+    setAuthToken(data.token);
+    storage.set(STORAGE_KEYS.USER, normalized);
+    storage.set(STORAGE_KEYS.AUTH_TOKEN, data.token);
+
+    // Preserve previous onboarding state or default to false
+    const onboardingComplete = storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
+    setIsOnboardingComplete(onboardingComplete);
+
+    return normalized;
+  };
+
+  // Register new user
+  const register = async ({ name, phoneNumber, password }) => {
+    const data = await authService.register({ name, phoneNumber, password });
+    const normalized = normalizeUser(data);
+
+    setUser(normalized);
+    setAuthToken(data.token);
+    storage.set(STORAGE_KEYS.USER, normalized);
+    storage.set(STORAGE_KEYS.AUTH_TOKEN, data.token);
+    storage.set(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
+    setIsOnboardingComplete(false);
+
+    return normalized;
   };
 
   // Update language
@@ -79,6 +122,7 @@ export const AppProvider = ({ children }) => {
     user,
     updateUser,
     login,
+    register,
     authToken,
     isAuthenticated: Boolean(authToken),
     language,

@@ -29,18 +29,15 @@ const trustPoints = [
 
 const TrustBuilding = ({ onNext }) => {
   return (
-    <div className="min-h-screen p-6 bg-white">
-      <h2 className="text-2xl font-bold text-center mb-8">
-        Why Trust Us?
-      </h2>
-      
-      <div className="space-y-6">
+    <div className="rounded-3xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-8 shadow-[0_18px_60px_rgba(12,53,43,0.12)]">
+      <h2 className="text-2xl font-bold text-center text-emerald-950 mb-6">Why trust us?</h2>
+      <div className="space-y-4">
         {trustPoints.map((point, index) => (
-          <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-            <span className="text-4xl">{point.icon}</span>
+          <div key={index} className="flex items-start gap-4 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
+            <span className="text-3xl">{point.icon}</span>
             <div>
-              <h3 className="font-semibold text-lg">{point.title}</h3>
-              <p className="text-gray-600 text-sm mt-1">{point.description}</p>
+              <h3 className="font-semibold text-lg text-emerald-950">{point.title}</h3>
+              <p className="text-emerald-900/75 text-sm mt-1">{point.description}</p>
             </div>
           </div>
         ))}
@@ -48,9 +45,9 @@ const TrustBuilding = ({ onNext }) => {
 
       <button
         onClick={onNext}
-        className="w-full mt-8 py-3 bg-green-600 text-white rounded-lg font-semibold"
+        className="w-full mt-8 rounded-full bg-emerald-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors"
       >
-        I Understand, Continue
+        I understand, continue
       </button>
     </div>
   );

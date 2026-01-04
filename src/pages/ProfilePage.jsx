@@ -19,7 +19,7 @@ const ProfilePage = () => {
   const handleNavigation = (page) => {
     setActiveNav(page);
     if (page === 'home') {
-      navigate('/');
+      navigate('/home');
     } else {
       navigate(`/${page}`);
     }
