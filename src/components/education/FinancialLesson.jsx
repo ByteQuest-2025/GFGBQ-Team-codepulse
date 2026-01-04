@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Interactive Financial Lesson Component
@@ -7,6 +8,7 @@ import React, { useState } from 'react';
 const FinancialLesson = ({ lesson, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [quizAnswer, setQuizAnswer] = useState(null);
+  const { t } = useApp();
 
   const handleNext = () => {
     if (currentStep < lesson.steps.length - 1) {
@@ -60,7 +62,7 @@ const FinancialLesson = ({ lesson, onComplete }) => {
     <div className="p-6 bg-white rounded-lg">
       <div className="mb-4">
         <div className="flex justify-between text-sm text-gray-500 mb-2">
-          <span>Step {currentStep + 1} of {lesson.steps.length}</span>
+          <span>{t('lesson.step_counter', 'Step {current} of {total}', { current: currentStep + 1, total: lesson.steps.length })}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
@@ -79,7 +81,7 @@ const FinancialLesson = ({ lesson, onComplete }) => {
 
       {step.example && (
         <div className="bg-blue-50 p-4 rounded-lg mb-6">
-          <p className="text-sm font-semibold text-blue-800 mb-2">Example:</p>
+          <p className="text-sm font-semibold text-blue-800 mb-2">{t('lesson.example', 'Example:')}</p>
           <p className="text-sm text-blue-700">{step.example}</p>
         </div>
       )}
@@ -88,7 +90,9 @@ const FinancialLesson = ({ lesson, onComplete }) => {
         onClick={handleNext}
         className="w-full py-3 bg-green-600 text-white rounded-lg font-semibold"
       >
-        {currentStep < lesson.steps.length - 1 ? 'Next' : 'Take Quiz'}
+        {currentStep < lesson.steps.length - 1
+          ? t('lesson.next', 'Next')
+          : t('lesson.take_quiz', 'Take Quiz')}
       </button>
     </div>
   );

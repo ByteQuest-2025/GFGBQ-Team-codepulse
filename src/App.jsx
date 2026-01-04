@@ -24,10 +24,10 @@ import './App.css';
  * Protected Route Component
  */
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isOnboardingComplete, isLoading } = useApp();
+  const { isAuthenticated, isOnboardingComplete, isLoading, t } = useApp();
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading..." />;
+    return <LoadingSpinner message={t('common.loading', 'Loading...')} />;
   }
 
   if (!isAuthenticated) {

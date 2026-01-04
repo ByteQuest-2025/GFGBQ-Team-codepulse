@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import LanguageToggle from '../components/common/LanguageToggle';
+import { useApp } from '../context/AppContext';
 
 const Pill = ({ children }) => (
   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 text-xs font-semibold text-emerald-900 border border-emerald-100 shadow-sm">
@@ -42,6 +44,7 @@ const StatCard = ({ label, value, detail }) => (
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { t } = useApp();
 
   const scrollToId = (id) => {
     const el = document.getElementById(id);
@@ -65,22 +68,23 @@ const LandingPage = () => {
             <div className="h-10 w-10 rounded-xl bg-emerald-900 text-white font-semibold flex items-center justify-center">MI</div>
             <div className="leading-tight">
               <p className="text-sm font-semibold text-emerald-900">MicroInvest</p>
-              <p className="text-xs text-emerald-900/70">Finance for everyone</p>
+              <p className="text-xs text-emerald-900/70">{t('landing.brand_tagline', 'Finance for everyone')}</p>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-emerald-900/80">
-            <button onClick={() => scrollToId('features')} className="hover:text-emerald-900 transition-colors">Product</button>
-            <button onClick={() => scrollToId('process')} className="hover:text-emerald-900 transition-colors">How it works</button>
-            <button onClick={() => scrollToId('benefits')} className="hover:text-emerald-900 transition-colors">Benefits</button>
-            <button onClick={() => scrollToId('social-proof')} className="hover:text-emerald-900 transition-colors">Trust</button>
+            <button onClick={() => scrollToId('features')} className="hover:text-emerald-900 transition-colors">{t('landing.nav.product', 'Product')}</button>
+            <button onClick={() => scrollToId('process')} className="hover:text-emerald-900 transition-colors">{t('landing.nav.how', 'How it works')}</button>
+            <button onClick={() => scrollToId('benefits')} className="hover:text-emerald-900 transition-colors">{t('landing.nav.benefits', 'Benefits')}</button>
+            <button onClick={() => scrollToId('social-proof')} className="hover:text-emerald-900 transition-colors">{t('landing.nav.trust', 'Trust')}</button>
           </nav>
           <div className="flex items-center gap-3">
-            <Link to="/login" className="text-sm font-semibold text-emerald-900/80 hover:text-emerald-900">Log in</Link>
+            <LanguageToggle />
+            <Link to="/login" className="text-sm font-semibold text-emerald-900/80 hover:text-emerald-900">{t('common.log_in', 'Log in')}</Link>
             <button
               onClick={() => navigate('/signup')}
               className="rounded-full bg-emerald-900 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors"
             >
-              Get started
+              {t('common.get_started', 'Get started')}
             </button>
           </div>
         </header>
@@ -91,40 +95,40 @@ const LandingPage = () => {
             <div className="space-y-6">
               <Pill>
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                Built for modern teams
+                {t('landing.nav.product', 'Product')}
               </Pill>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-emerald-950">
-                A calm, confident platform to manage and grow what matters.
+                {t('landing.hero.title', 'A calm, confident platform to manage and grow what matters.')}
               </h1>
               <p className="text-lg text-emerald-900/80 max-w-xl">
-                MicroInvest brings structure, clarity, and trust to your financial operations with thoughtful design, reliable workflows, and a focus on real outcomes.
+                {t('landing.hero.subtitle', 'MicroInvest brings structure, clarity, and trust to your financial operations with thoughtful design, reliable workflows, and a focus on real outcomes.')}
               </p>
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => navigate('/signup')}
                   className="rounded-full bg-emerald-900 px-5 py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors"
                 >
-                  Start free
+                  {t('landing.hero.primary', 'Start free')}
                 </button>
                 <button
                   onClick={() => scrollToId('features')}
                   className="rounded-full border border-emerald-200 bg-white px-5 py-3 text-sm sm:text-base font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
                 >
-                  See product
+                  {t('landing.hero.secondary', 'See product')}
                 </button>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-emerald-900/70">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  Bank-grade security
+                  {t('landing.hero.security', 'Bank-grade security')}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  Human support
+                  {t('landing.hero.support', 'Human support')}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  Built for scale
+                  {t('landing.hero.scale', 'Built for scale')}
                 </div>
               </div>
             </div>
@@ -176,17 +180,17 @@ const LandingPage = () => {
         <section id="features" className="mt-16 sm:mt-20 lg:mt-24 space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <Pill>Why teams choose us</Pill>
-              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-emerald-950">Clarity, control, and confidence in every workflow.</h2>
+              <Pill>{t('landing.nav.trust', 'Trust')}</Pill>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-emerald-950">{t('landing.features.heading', 'Clarity, control, and confidence in every workflow.')}</h2>
               <p className="mt-2 text-sm sm:text-base text-emerald-900/75 max-w-2xl">
-                Purpose-built tools that stay out of your way while keeping you informed.
+                {t('landing.features.subheading', 'Purpose-built tools that stay out of your way while keeping you informed.')}
               </p>
             </div>
             <button
               onClick={() => navigate('/signup')}
               className="self-start sm:self-auto rounded-full border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
             >
-              Create account
+              {t('common.create_account', 'Create your account')}
             </button>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -227,10 +231,10 @@ const LandingPage = () => {
         <section id="process" className="mt-16 sm:mt-20 lg:mt-24 rounded-3xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-8 shadow-[0_18px_60px_rgba(12,53,43,0.1)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <Pill>How it works</Pill>
-              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-emerald-950">A simple path to dependable outcomes.</h2>
+              <Pill>{t('landing.nav.how', 'How it works')}</Pill>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-emerald-950">{t('landing.how.heading', 'A simple path to dependable outcomes.')}</h2>
             </div>
-            <Link to="/signup" className="text-sm font-semibold text-emerald-800 hover:text-emerald-900">Start in minutes →</Link>
+            <Link to="/signup" className="text-sm font-semibold text-emerald-800 hover:text-emerald-900">{t('landing.how.subheading', 'Start in minutes →')}</Link>
           </div>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <StepCard
@@ -259,10 +263,10 @@ const LandingPage = () => {
         {/* Benefits */}
         <section id="benefits" className="mt-16 sm:mt-20 lg:mt-24 grid gap-10 lg:grid-cols-2 lg:items-center">
           <div className="space-y-4">
-            <Pill>Designed for real teams</Pill>
-            <h2 className="text-2xl sm:text-3xl font-bold text-emerald-950">Built for operators, finance teams, and leaders who need clarity.</h2>
+            <Pill>{t('landing.nav.benefits', 'Benefits')}</Pill>
+            <h2 className="text-2xl sm:text-3xl font-bold text-emerald-950">{t('landing.benefits.heading', 'Built for operators, finance teams, and leaders who need clarity.')}</h2>
             <p className="text-sm sm:text-base text-emerald-900/75">
-              Whether you're consolidating tools or establishing process rigor, MicroInvest keeps your workflows tidy and your stakeholders aligned.
+              {t('landing.benefits.subheading', "Whether you're consolidating tools or establishing process rigor, MicroInvest keeps your workflows tidy and your stakeholders aligned.")}
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-emerald-100 bg-white/80 p-4 shadow-sm">
@@ -310,8 +314,9 @@ const LandingPage = () => {
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-emerald-950">Teams rely on MicroInvest to stay precise and calm.</h2>
             </div>
             <div className="flex gap-3">
-              <StatCard label="Uptime" value="99.98%" detail="Measured over last 12 months" />
-              <StatCard label="NPS" value="64" detail="Across finance & ops users" />
+              <button onClick={() => scrollToId('features')} className="hover:text-emerald-900">{t('landing.nav.product', 'Product')}</button>
+              <button onClick={() => scrollToId('process')} className="hover:text-emerald-900">{t('landing.nav.how', 'How it works')}</button>
+              <button onClick={() => scrollToId('benefits')} className="hover:text-emerald-900">{t('landing.nav.benefits', 'Benefits')}</button>
             </div>
           </div>
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -337,21 +342,21 @@ const LandingPage = () => {
         <section className="mt-16 sm:mt-20 lg:mt-24 rounded-3xl border border-emerald-100 bg-emerald-900 text-white p-10 shadow-[0_18px_60px_rgba(12,53,43,0.25)] flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-white/70">Ready to begin?</p>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-bold">Ship with confidence, not chaos.</h2>
-            <p className="mt-2 text-sm sm:text-base text-white/75">Start with a focused plan, and scale without rework.</p>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold">{t('landing.cta.title', 'Ship with confidence, not chaos.')}</h2>
+            <p className="mt-2 text-sm sm:text-base text-white/75">{t('landing.cta.subtitle', 'Start with a focused plan, and scale without rework.')}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => navigate('/signup')}
               className="rounded-full bg-white px-5 py-3 text-sm sm:text-base font-semibold text-emerald-900 shadow-lg shadow-black/10 hover:bg-emerald-50 transition-colors"
             >
-              Start free
+              {t('landing.cta.primary', 'Start free')}
             </button>
             <button
               onClick={() => navigate('/login')}
               className="rounded-full border border-white/30 bg-transparent px-5 py-3 text-sm sm:text-base font-semibold text-white hover:bg-white/10 transition-colors"
             >
-              Log in
+              {t('landing.cta.secondary', 'Log in')}
             </button>
           </div>
         </section>
@@ -366,16 +371,16 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="flex gap-6">
-            <button onClick={() => scrollToId('features')} className="hover:text-emerald-900">Product</button>
-            <button onClick={() => scrollToId('process')} className="hover:text-emerald-900">How it works</button>
-            <button onClick={() => scrollToId('benefits')} className="hover:text-emerald-900">Customers</button>
+            <button onClick={() => scrollToId('features')} className="hover:text-emerald-900">{t('landing.nav.product', 'Product')}</button>
+            <button onClick={() => scrollToId('process')} className="hover:text-emerald-900">{t('landing.nav.how', 'How it works')}</button>
+            <button onClick={() => scrollToId('benefits')} className="hover:text-emerald-900">{t('landing.nav.benefits', 'Benefits')}</button>
           </div>
           <div className="flex gap-4 sm:justify-end text-xs text-emerald-900/70">
-            <Link to="/login" className="hover:text-emerald-900">Support</Link>
+            <Link to="/login" className="hover:text-emerald-900">{t('landing.footer.support', 'Support')}</Link>
             <span>•</span>
-            <Link to="/login" className="hover:text-emerald-900">Privacy</Link>
+            <Link to="/login" className="hover:text-emerald-900">{t('landing.footer.privacy', 'Privacy')}</Link>
             <span>•</span>
-            <Link to="/login" className="hover:text-emerald-900">Terms</Link>
+            <Link to="/login" className="hover:text-emerald-900">{t('landing.footer.terms', 'Terms')}</Link>
           </div>
         </footer>
       </div>

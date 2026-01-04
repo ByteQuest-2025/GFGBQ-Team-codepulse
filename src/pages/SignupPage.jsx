@@ -5,7 +5,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const { register, isAuthenticated, isOnboardingComplete, isLoading } = useApp();
+  const { register, isAuthenticated, isOnboardingComplete, isLoading, t } = useApp();
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +21,7 @@ const SignupPage = () => {
   }, [isAuthenticated, isOnboardingComplete, navigate]);
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading..." />;
+    return <LoadingSpinner message={t('common.loading', 'Loading...')} />;
   }
 
   const handleSubmit = async (e) => {
@@ -30,19 +30,19 @@ const SignupPage = () => {
     setIsSubmitting(true);
 
     if (!name.trim() || !phoneNumber.trim() || !password.trim()) {
-      setError('Please fill all required fields.');
+      setError(t('signup.error_required', 'Please fill all required fields.'));
       setIsSubmitting(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError(t('signup.error_password_length', 'Password must be at least 6 characters.'));
       setIsSubmitting(false);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('signup.error_password_mismatch', 'Passwords do not match.'));
       setIsSubmitting(false);
       return;
     }
@@ -51,7 +51,7 @@ const SignupPage = () => {
       await register({ name: name.trim(), phoneNumber: phoneNumber.trim(), password: password.trim() });
       navigate('/onboarding', { replace: true });
     } catch (err) {
-      setError(err.message || 'Unable to create account. Please try again.');
+      setError(err.message || t('signup.error_generic', 'Unable to create account. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -64,13 +64,13 @@ const SignupPage = () => {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 text-green-700 text-2xl mb-3">
             ✨
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-sm text-gray-500 mt-1">Start your investing journey in minutes</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('signup.title', 'Create your account')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('signup.subtitle', 'Start your investing journey in minutes')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700">{t('common.full_name', 'Full Name')}</label>
             <input
               type="text"
               value={name}
@@ -81,7 +81,7 @@ const SignupPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700">{t('common.phone_number', 'Phone Number')}</label>
             <input
               type="tel"
               value={phoneNumber}
@@ -92,7 +92,7 @@ const SignupPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">{t('common.password', 'Password')}</label>
             <input
               type="password"
               value={password}
@@ -103,7 +103,7 @@ const SignupPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700">{t('common.confirm_password', 'Confirm Password')}</label>
             <input
               type="password"
               value={confirmPassword}
@@ -120,18 +120,18 @@ const SignupPage = () => {
             className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Creating account...' : 'Sign up'}
+            {isSubmitting ? t('signup.submit_loading', 'Creating account...') : t('signup.submit', 'Sign up')}
           </button>
 
           <p className="text-sm text-center text-gray-500">
-            Already have an account?{' '}
+            {t('common.already_account', 'Already have an account?')}{' '}
             <Link to="/login" className="text-green-700 font-semibold hover:underline">
-              Sign in
+              {t('signup.link_login', 'Sign in')}
             </Link>
           </p>
 
           <p className="text-xs text-center text-gray-400">
-            By signing up you agree to our Terms & Privacy.
+            {t('signup.agree', 'By signing up you agree to our Terms & Privacy.')}
           </p>
         </form>
       </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import LanguageToggle from './LanguageToggle';
 
 const DecorativeBg = () => (
   <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
@@ -19,7 +20,10 @@ const PageShell = ({ title, subtitle, actions, children }) => {
               {title && <h1 className="text-2xl sm:text-3xl font-bold leading-tight text-emerald-950">{title}</h1>}
               {subtitle && <p className="mt-1 text-sm sm:text-base text-emerald-900/75 max-w-2xl">{subtitle}</p>}
             </div>
-            {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
+            <div className="flex flex-wrap items-start gap-3 justify-end">
+              <LanguageToggle />
+              {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
+            </div>
           </header>
         )}
         <div className="space-y-6">{children}</div>
