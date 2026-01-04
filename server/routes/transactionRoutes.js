@@ -6,6 +6,9 @@ import mongoose from 'mongoose'; // For session transactions
 
 const router = express.Router();
 
+// All transaction routes are user-scoped and require authentication
+router.use(protect);
+
 // @desc    Get all transactions for a user
 // @route   GET /api/transactions
 // @access  Private

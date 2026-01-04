@@ -15,6 +15,11 @@ const userSchema = mongoose.Schema(
     name: {
       type: String,
     },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
     balance: {
       type: Number,
       default: 0,
@@ -33,14 +38,11 @@ const userSchema = mongoose.Schema(
   }
 );
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
+// Hash password before saving (async middleware does not need next())
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Method to compare entered password with hashed password

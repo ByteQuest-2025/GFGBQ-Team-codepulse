@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { protect } from '../middleware/authMiddleware.js';
 import Investment from '../models/Investment.js';
 import User from '../models/User.js';
@@ -6,10 +7,13 @@ import Transaction from '../models/Transaction.js'; // To record related transac
 
 const router = express.Router();
 
+// All investment routes are user-scoped and require authentication
+router.use(protect);
+
 // @desc    Get all investments for a user
 // @route   GET /api/investments
 // @access  Private
-router.get('/', protect, async (req, res) => {
+router.get('/', async (req, res) => {
   const investments = await Investment.find({ userId: req.user._id });
   res.json(investments);
 });
@@ -17,7 +21,7 @@ router.get('/', protect, async (req, res) => {
 // @desc    Get a single investment by ID
 // @route   GET /api/investments/:id
 // @access  Private
-router.get('/:id', protect, async (req, res) => {
+router.get('/:id', async (req, res) => {
   const investment = await Investment.findOne({ _id: req.params.id, userId: req.user._id });
   if (investment) {
     res.json(investment);
@@ -29,7 +33,7 @@ router.get('/:id', protect, async (req, res) => {
 // @desc    Create a new investment
 // @route   POST /api/investments
 // @access  Private
-router.post('/', protect, async (req, res) => {
+router.post('/', async (req, res) => {
   const { amount, investmentType } = req.body;
 
   if (!amount || amount <= 0) {
@@ -85,7 +89,7 @@ router.post('/', protect, async (req, res) => {
 // @desc    Update an investment (e.g., status, return) - requires careful logic
 // @route   PUT /api/investments/:id
 // @access  Private (and possibly admin only for certain fields)
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', async (req, res) => {
   const { status, returnRate } = req.body; // Example fields to update
 
   const investment = await Investment.findOne({ _id: req.params.id, userId: req.user._id });
@@ -104,7 +108,7 @@ router.put('/:id', protect, async (req, res) => {
 // @desc    Delete an investment (rarely allowed for actual investments)
 // @route   DELETE /api/investments/:id
 // @access  Private
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const investment = await Investment.findOne({ _id: req.params.id, userId: req.user._id });
 
   if (investment) {

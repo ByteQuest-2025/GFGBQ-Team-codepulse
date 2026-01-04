@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, authorize } from '../middleware/authMiddleware.js';
 import User from '../models/User.js';
 
 const router = express.Router();
@@ -20,7 +20,7 @@ router.get('/profile', protect, async (req, res) => {
 // @desc    Update user balance (e.g., after deposit/withdrawal)
 // @route   PUT /api/user/:id/balance
 // @access  Private (Admin or controlled by system for transactions)
-router.put('/:id/balance', protect, async (req, res) => {
+router.put('/:id/balance', protect, authorize('admin'), async (req, res) => {
     // For simplicity, we assume this is called by a service or admin.
     // In a real app, strict validation and transaction management is needed.
     const { amount, type } = req.body; // type: 'add' or 'subtract'

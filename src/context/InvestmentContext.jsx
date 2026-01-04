@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { investmentService } from '../services/investmentService';
 import { transactionService } from '../services/transactionService';
 import { storage, STORAGE_KEYS } from '../utils/storage';
+import { useApp } from './AppContext';
 
 const InvestmentContext = createContext();
 
@@ -10,22 +11,32 @@ const InvestmentContext = createContext();
  * Manages portfolio, investments, and transactions
  */
 export const InvestmentProvider = ({ children }) => {
+  const { user } = useApp();
   const [portfolio, setPortfolio] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [investmentOptions, setInvestmentOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Namespace storage keys by user so each user sees only their own data
+  const userScopedKeys = useMemo(() => {
+    const id = user?._id || 'guest';
+    return {
+      portfolioKey: `${STORAGE_KEYS.PORTFOLIO}_${id}`,
+      transactionsKey: `${STORAGE_KEYS.TRANSACTIONS}_${id}`,
+    };
+  }, [user?._id]);
+
   // Load initial data
   useEffect(() => {
     loadInitialData();
-  }, []);
+  }, [userScopedKeys]);
 
   const loadInitialData = async () => {
     setIsLoading(true);
     try {
       // Load from storage first (for offline support)
-      const savedPortfolio = storage.get(STORAGE_KEYS.PORTFOLIO, []);
-      const savedTransactions = storage.get(STORAGE_KEYS.TRANSACTIONS, []);
+      const savedPortfolio = storage.get(userScopedKeys.portfolioKey, []);
+      const savedTransactions = storage.get(userScopedKeys.transactionsKey, []);
       
       setPortfolio(savedPortfolio);
       setTransactions(savedTransactions);
@@ -53,7 +64,7 @@ export const InvestmentProvider = ({ children }) => {
 
       const updatedPortfolio = [...portfolio, newInvestment];
       setPortfolio(updatedPortfolio);
-      storage.set(STORAGE_KEYS.PORTFOLIO, updatedPortfolio);
+      storage.set(userScopedKeys.portfolioKey, updatedPortfolio);
 
       // Create transaction record
       await addTransaction({
@@ -83,7 +94,7 @@ export const InvestmentProvider = ({ children }) => {
 
       const updatedTransactions = [newTransaction, ...transactions];
       setTransactions(updatedTransactions);
-      storage.set(STORAGE_KEYS.TRANSACTIONS, updatedTransactions);
+      storage.set(userScopedKeys.transactionsKey, updatedTransactions);
 
       return newTransaction;
     } catch (error) {
@@ -128,7 +139,7 @@ export const InvestmentProvider = ({ children }) => {
     });
 
     setPortfolio(updatedPortfolio);
-    storage.set(STORAGE_KEYS.PORTFOLIO, updatedPortfolio);
+    storage.set(userScopedKeys.portfolioKey, updatedPortfolio);
   };
 
   const value = {
