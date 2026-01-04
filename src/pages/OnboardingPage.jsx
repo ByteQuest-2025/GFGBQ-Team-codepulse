@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import Welcome from '../components/onboarding/Welcome';
 import LanguageSelector from '../components/onboarding/LanguageSelector';
 import TrustBuilding from '../components/onboarding/TrustBuilding';
+import { useApp } from '../context/AppContext';
 
 /**
  * Onboarding Flow Page
  * Guides new users through initial setup
  */
 const OnboardingPage = ({ onComplete }) => {
+  const { language, updateLanguage } = useApp();
   const [step, setStep] = useState(0);
-  const [language, setLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState(language);
 
   const handleLanguageSelect = (lang) => {
-    setLanguage(lang);
+    setSelectedLanguage(lang);
+    updateLanguage(lang);
     setStep(2);
   };
 
@@ -21,9 +24,9 @@ const OnboardingPage = ({ onComplete }) => {
       case 0:
         return <Welcome onNext={() => setStep(1)} />;
       case 1:
-        return <LanguageSelector selectedLanguage={language} onSelect={handleLanguageSelect} />;
+        return <LanguageSelector selectedLanguage={selectedLanguage} onSelect={handleLanguageSelect} />;
       case 2:
-        return <TrustBuilding onNext={() => onComplete(language)} />;
+        return <TrustBuilding onNext={() => onComplete(selectedLanguage)} />;
       default:
         return null;
     }

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { storage, STORAGE_KEYS } from '../utils/storage';
 import { authService } from '../services/authService';
+import { translate } from '../i18n/translations';
 
 const AppContext = createContext();
 
@@ -102,6 +103,8 @@ export const AppProvider = ({ children }) => {
     storage.set(STORAGE_KEYS.LANGUAGE, lang);
   };
 
+  const t = (key, fallback, vars) => translate(language, key, fallback, vars);
+
   // Complete onboarding
   const completeOnboarding = () => {
     setIsOnboardingComplete(true);
@@ -127,6 +130,7 @@ export const AppProvider = ({ children }) => {
     isAuthenticated: Boolean(authToken),
     language,
     updateLanguage,
+    t,
     isOnboardingComplete,
     completeOnboarding,
     isLoading,

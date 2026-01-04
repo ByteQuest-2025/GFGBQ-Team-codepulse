@@ -4,10 +4,12 @@ import FinancialLesson from '../components/education/FinancialLesson';
 import BottomNav from '../components/common/BottomNav';
 import { useEducation } from '../context/EducationContext';
 import PageShell from '../components/common/PageShell';
+import { useApp } from '../context/AppContext';
 
 const LearnPage = () => {
   const navigate = useNavigate();
   const { progress, completeLesson, isLessonCompleted } = useEducation();
+  const { t } = useApp();
   const [activeNav, setActiveNav] = React.useState('learn');
   const [selectedTopic, setSelectedTopic] = React.useState(null);
 
@@ -101,13 +103,13 @@ const LearnPage = () => {
     return (
       <PageShell
         title={selectedTopic.title}
-        subtitle="Quick, practical lessons to build confidence."
+        subtitle={t('lesson.quick.title', 'Quick, practical lessons to build confidence.')}
         actions={(
           <button
             onClick={() => setSelectedTopic(null)}
             className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
           >
-            ← Back to topics
+            {t('lesson.quick.back', '← Back to topics')}
           </button>
         )}
       >
@@ -116,7 +118,7 @@ const LearnPage = () => {
             lesson={sampleLesson}
             onComplete={() => {
               completeLesson(selectedTopic.id);
-              alert('Lesson completed! 🎉');
+              alert(t('lesson.completed', 'Lesson completed! 🎉'));
               setSelectedTopic(null);
             }}
           />
@@ -128,11 +130,11 @@ const LearnPage = () => {
 
   return (
     <PageShell
-      title="Learn & Grow"
-      subtitle="Bite-sized lessons that keep you confident and in control."
+      title={t('learn.title', 'Learn & Grow')}
+      subtitle={t('learn.subtitle', 'Bite-sized lessons that keep you confident and in control.')}
       actions={(
         <div className="rounded-full bg-white/80 border border-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900 shadow-sm">
-          {progress.completedLessons.length} / {topics.length} completed
+          {t('learn.progress.label', '{completed} of {total} lessons completed', { completed: progress.completedLessons.length, total: topics.length })}
         </div>
       )}
     >
@@ -140,9 +142,9 @@ const LearnPage = () => {
         <div className="flex gap-3 items-start">
           <span className="text-2xl">💡</span>
           <div>
-            <p className="text-sm font-semibold text-emerald-900">Why learn?</p>
+            <p className="text-sm font-semibold text-emerald-900">{t('learn.why.title', 'Why learn?')}</p>
             <p className="text-sm text-emerald-900/75 mt-1">
-              The more you understand, the more confident you'll feel about investing your money safely.
+              {t('learn.why.body', "The more you understand, the more confident you'll feel about investing your money safely.")}
             </p>
           </div>
         </div>
@@ -150,8 +152,8 @@ const LearnPage = () => {
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-emerald-950">Popular topics</h2>
-          <span className="text-xs text-emerald-900/70">Beginner friendly</span>
+          <h2 className="text-lg font-semibold text-emerald-950">{t('learn.popular', 'Popular topics')}</h2>
+          <span className="text-xs text-emerald-900/70">{t('learn.beginner', 'Beginner friendly')}</span>
         </div>
         <div className="space-y-3">
           {topics.map((topic) => (
@@ -168,7 +170,7 @@ const LearnPage = () => {
                     <span className="rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold">{topic.difficulty}</span>
                     <span className="rounded-full bg-white border border-emerald-100 px-2 py-1">⏱️ {topic.duration}</span>
                     {topic.completed && (
-                      <span className="text-emerald-700 font-semibold">✓ Completed</span>
+                      <span className="text-emerald-700 font-semibold">{t('learn.topic.completed', '✓ Completed')}</span>
                     )}
                   </div>
                 </div>
@@ -182,8 +184,8 @@ const LearnPage = () => {
       <div className="rounded-3xl bg-gradient-to-r from-emerald-900 to-emerald-700 text-white p-6 shadow-[0_18px_60px_rgba(12,53,43,0.25)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold">Your progress</h3>
-            <p className="text-sm text-white/80 mt-1">{progress.completedLessons.length} of {topics.length} lessons completed</p>
+            <h3 className="text-lg font-bold">{t('learn.progress.title', 'Your progress')}</h3>
+            <p className="text-sm text-white/80 mt-1">{t('learn.progress.label', '{completed} of {total} lessons completed', { completed: progress.completedLessons.length, total: topics.length })}</p>
           </div>
           <span className="text-4xl">🎯</span>
         </div>

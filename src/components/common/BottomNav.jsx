@@ -1,16 +1,19 @@
 import React from 'react';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Bottom Navigation Bar
  * Simple navigation for main sections
  */
 const BottomNav = ({ active, onNavigate }) => {
+  const { t } = useApp();
+
   const navItems = [
-    { id: 'home', icon: '🏠', label: 'Home' },
-    { id: 'invest', icon: '💰', label: 'Invest' },
-    { id: 'learn', icon: '📚', label: 'Learn' },
-    { id: 'passbook', icon: '📖', label: 'Passbook' },
-    { id: 'profile', icon: '👤', label: 'Profile' }
+    { id: 'home', icon: '🏠', label: t('bottom.home', 'Home') },
+    { id: 'invest', icon: '💰', label: t('bottom.invest', 'Invest') },
+    { id: 'learn', icon: '📚', label: t('bottom.learn', 'Learn') },
+    { id: 'passbook', icon: '📖', label: t('bottom.passbook', 'Passbook') },
+    { id: 'profile', icon: '👤', label: t('bottom.profile', 'Profile') }
   ];
 
   return (

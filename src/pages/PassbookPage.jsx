@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvestment } from '../context/InvestmentContext';
+import { useApp } from '../context/AppContext';
 import BottomNav from '../components/common/BottomNav';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import PageShell from '../components/common/PageShell';
@@ -12,6 +13,7 @@ import PageShell from '../components/common/PageShell';
 const PassbookPage = () => {
   const navigate = useNavigate();
   const { transactions, getPortfolioSummary, isLoading, updateInvestmentValues } = useInvestment();
+  const { t } = useApp();
   const [activeNav, setActiveNav] = React.useState('passbook');
   const [filter, setFilter] = React.useState('all'); // Add filter state
 
@@ -38,7 +40,7 @@ const PassbookPage = () => {
   const summary = getPortfolioSummary();
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading transactions..." />;
+    return <LoadingSpinner message={t('passbook.loading', 'Loading transactions...')} />;
   }
 
   const getIcon = (type) => {
@@ -67,35 +69,35 @@ const PassbookPage = () => {
 
   return (
     <PageShell
-      title="Your Passbook"
-      subtitle="All transactions in one calm, clear view."
+      title={t('passbook.title', 'Your Passbook')}
+      subtitle={t('passbook.subtitle', 'All transactions in one calm, clear view.')}
       actions={(
         <button
           className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
           onClick={() => setFilter('all')}
         >
-          📄 Export
+          📄 {t('passbook.export', 'Export')}
         </button>
       )}
     >
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
-          <div className="text-xs text-emerald-900/70 mb-1">Total invested</div>
+          <div className="text-xs text-emerald-900/70 mb-1">{t('passbook.total_invested', 'Total invested')}</div>
           <div className="text-2xl font-bold text-emerald-900">₹{totalInvested}</div>
-          <p className="text-xs text-emerald-900/60 mt-1">Updated now</p>
+          <p className="text-xs text-emerald-900/60 mt-1">{t('passbook.updated_now', 'Updated now')}</p>
         </div>
         <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 shadow-sm">
-          <div className="text-xs text-emerald-900/70 mb-1">Interest earned</div>
+          <div className="text-xs text-emerald-900/70 mb-1">{t('passbook.interest_earned', 'Interest earned')}</div>
           <div className="text-2xl font-bold text-emerald-800">₹{totalInterest}</div>
-          <p className="text-xs text-emerald-900/60 mt-1">All time</p>
+          <p className="text-xs text-emerald-900/60 mt-1">{t('passbook.all_time', 'All time')}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {[
-          { id: 'all', label: 'All' },
-          { id: 'investments', label: 'Investments' },
-          { id: 'interest', label: 'Interest' }
+          { id: 'all', label: t('passbook.filter.all', 'All') },
+          { id: 'investments', label: t('passbook.filter.investments', 'Investments') },
+          { id: 'interest', label: t('passbook.filter.interest', 'Interest') }
         ].map((item) => (
           <button
             key={item.id}
@@ -115,8 +117,8 @@ const PassbookPage = () => {
         {filteredTransactions.length === 0 ? (
           <div className="text-center py-10 rounded-2xl border border-dashed border-emerald-200 bg-white/70">
             <span className="text-5xl block mb-3">📭</span>
-            <p className="text-emerald-900/75 font-semibold">No transactions found</p>
-            <p className="text-sm text-emerald-900/60">Try changing filters or make your first investment.</p>
+            <p className="text-emerald-900/75 font-semibold">{t('passbook.empty.title', 'No transactions found')}</p>
+            <p className="text-sm text-emerald-900/60">{t('passbook.empty.subtitle', 'Try changing filters or make your first investment.')}</p>
           </div>
         ) : (
           filteredTransactions.map((transaction) => (
@@ -144,7 +146,7 @@ const PassbookPage = () => {
                         year: 'numeric'
                       })}
                     </span>
-                    <span className="rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold">✓ {transaction.status}</span>
+                    <span className="rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold">{t('passbook.status', '✓ {status}', { status: transaction.status })}</span>
                   </div>
                 </div>
               </div>
@@ -154,7 +156,7 @@ const PassbookPage = () => {
       </div>
 
       <button className="w-full rounded-full bg-emerald-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors">
-        📄 Download statement
+        📄 {t('passbook.download', 'Download statement')}
       </button>
 
       <BottomNav active={activeNav} onNavigate={handleNavigation} />

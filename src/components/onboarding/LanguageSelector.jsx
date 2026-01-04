@@ -1,4 +1,5 @@
 import React from 'react';
+import { useApp } from '../../context/AppContext';
 
 /**
  * Language Selection Component
@@ -14,10 +15,12 @@ const languages = [
 ];
 
 const LanguageSelector = ({ selectedLanguage, onSelect }) => {
+  const { t } = useApp();
+
   return (
     <div className="rounded-3xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-8 shadow-[0_18px_60px_rgba(12,53,43,0.12)]">
-      <h2 className="text-xl sm:text-2xl font-bold text-center text-emerald-950">Choose your language</h2>
-      <p className="text-sm text-center text-emerald-900/70 mt-2">Switch anytime in settings.</p>
+      <h2 className="text-xl sm:text-2xl font-bold text-center text-emerald-950">{t('language.title', 'Choose your language')}</h2>
+      <p className="text-sm text-center text-emerald-900/70 mt-2">{t('language.subtitle', 'Switch anytime in settings.')}</p>
       <div className="mt-6 grid grid-cols-2 gap-3">
         {languages.map((lang) => (
           <button

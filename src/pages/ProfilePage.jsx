@@ -11,7 +11,7 @@ import BottomNav from '../components/common/BottomNav';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { getPortfolioSummary } = useInvestment();
-  const { user, language, logout } = useApp();
+  const { user, language, logout, t } = useApp();
   const [activeNav, setActiveNav] = React.useState('profile');
 
   const summary = getPortfolioSummary();
@@ -26,21 +26,21 @@ const ProfilePage = () => {
   };
 
   const userInfo = user || {
-    name: 'Guest User',
-    phone: 'Not logged in',
+    name: t('profile.guest', 'Guest User'),
+    phone: t('profile.not_logged_in', 'Not logged in'),
     language: language || 'English',
     joinDate: new Date().toISOString()
   };
 
   const menuItems = [
-    { icon: '👤', title: 'Personal Information', action: 'profile' },
-    { icon: '🔔', title: 'Notifications', badge: '2', action: 'notifications' },
-    { icon: '🌐', title: 'Change Language', action: 'language' },
-    { icon: '💳', title: 'Payment Methods', action: 'payment' },
-    { icon: '📄', title: 'Documents & KYC', action: 'documents' },
-    { icon: '❓', title: 'Help & Support', action: 'help' },
-    { icon: '📜', title: 'Terms & Privacy', action: 'legal' },
-    { icon: '⭐', title: 'Rate Our App', action: 'rate' }
+    { icon: '👤', title: t('profile.menu.personal', 'Personal Information'), action: 'profile' },
+    { icon: '🔔', title: t('profile.menu.notifications', 'Notifications'), badge: '2', action: 'notifications' },
+    { icon: '🌐', title: t('profile.menu.language', 'Change Language'), action: 'language' },
+    { icon: '💳', title: t('profile.menu.payment', 'Payment Methods'), action: 'payment' },
+    { icon: '📄', title: t('profile.menu.documents', 'Documents & KYC'), action: 'documents' },
+    { icon: '❓', title: t('profile.menu.help', 'Help & Support'), action: 'help' },
+    { icon: '📜', title: t('profile.menu.legal', 'Terms & Privacy'), action: 'legal' },
+    { icon: '⭐', title: t('profile.menu.rate', 'Rate Our App'), action: 'rate' }
   ];
 
   return (
@@ -53,7 +53,7 @@ const ProfilePage = () => {
           <h2 className="text-xl font-bold">{userInfo.name}</h2>
           <p className="text-sm opacity-90 mt-1">{userInfo.phone}</p>
           <p className="text-xs opacity-75 mt-1">
-            Member since {new Date(userInfo.joinDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+            {t('profile.member_since', 'Member since {date}', { date: new Date(userInfo.joinDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) })}
           </p>
         </div>
       </div>
@@ -63,15 +63,15 @@ const ProfilePage = () => {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
             <div className="text-2xl font-bold text-green-600">₹{summary.totalInvested.toLocaleString('en-IN')}</div>
-            <div className="text-xs text-gray-500 mt-1">Total Invested</div>
+            <div className="text-xs text-gray-500 mt-1">{t('profile.stats.invested', 'Total Invested')}</div>
           </div>
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
             <div className="text-2xl font-bold text-blue-600">{summary.investmentCount}</div>
-            <div className="text-xs text-gray-500 mt-1">Investments</div>
+            <div className="text-xs text-gray-500 mt-1">{t('profile.stats.count', 'Investments')}</div>
           </div>
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
             <div className="text-2xl font-bold text-purple-600">₹{Math.round(summary.totalGain).toLocaleString('en-IN')}</div>
-            <div className="text-xs text-gray-500 mt-1">Returns</div>
+            <div className="text-xs text-gray-500 mt-1">{t('profile.stats.returns', 'Returns')}</div>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ const ProfilePage = () => {
           }}
           className="w-full mt-6 py-3 bg-red-50 text-red-600 rounded-lg font-semibold border-2 border-red-200 hover:bg-red-100 transition-all"
         >
-          🚪 Logout
+          🚪 {t('profile.logout', 'Logout')}
         </button>
 
         {/* App Version */}

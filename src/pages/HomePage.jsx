@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvestment } from '../context/InvestmentContext';
+import { useApp } from '../context/AppContext';
 import PortfolioSummary from '../components/dashboard/PortfolioSummary';
 import InvestmentList from '../components/dashboard/InvestmentList';
 import BottomNav from '../components/common/BottomNav';
@@ -15,6 +16,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('home');
   const { portfolio, getPortfolioSummary, isLoading, updateInvestmentValues } = useInvestment();
+  const { t } = useApp();
 
   // Update investment values on mount and periodically
   useEffect(() => {
@@ -40,18 +42,18 @@ const HomePage = () => {
   const summary = getPortfolioSummary();
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading your portfolio..." />;
+    return <LoadingSpinner message={t('home.loading', 'Loading your portfolio...')} />;
   }
 
   return (
     <PageShell
-      title="Welcome back 👋"
+      title={t('home.title', 'Welcome back 👋')}
       subtitle={portfolio.length > 0
-        ? `${portfolio.length} active investment${portfolio.length > 1 ? 's' : ''}`
-        : "Let's start your investment journey"}
+        ? t('home.subtitle_active', '{count} active investment{suffix}', { count: portfolio.length, suffix: portfolio.length > 1 ? 's' : '' })
+        : t('home.subtitle_empty', "Let's start your investment journey")}
       actions={(
         <button className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors">
-          🔔 Notifications
+          🔔 {t('home.notifications', 'Notifications')}
         </button>
       )}
     >
@@ -65,8 +67,8 @@ const HomePage = () => {
           <div className="flex items-center gap-3">
             <span className="text-3xl">📚</span>
             <div>
-              <p className="text-sm font-semibold text-emerald-950">Learn</p>
-              <p className="text-xs text-emerald-900/70">New lesson available</p>
+              <p className="text-sm font-semibold text-emerald-950">{t('home.card.learn.title', 'Learn')}</p>
+              <p className="text-xs text-emerald-900/70">{t('home.card.learn.subtitle', 'New lesson available')}</p>
             </div>
           </div>
         </button>
@@ -77,8 +79,8 @@ const HomePage = () => {
           <div className="flex items-center gap-3">
             <span className="text-3xl">🎯</span>
             <div>
-              <p className="text-sm font-semibold text-emerald-950">Start investing</p>
-              <p className="text-xs text-emerald-900/70">Browse safe options</p>
+              <p className="text-sm font-semibold text-emerald-950">{t('home.card.invest.title', 'Start investing')}</p>
+              <p className="text-xs text-emerald-900/70">{t('home.card.invest.subtitle', 'Browse safe options')}</p>
             </div>
           </div>
         </button>
