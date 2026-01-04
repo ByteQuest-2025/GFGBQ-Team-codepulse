@@ -47,7 +47,7 @@ export const APP_CONFIG = {
 
 // API Endpoints (for future use)
 export const API_ENDPOINTS = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_URL || 'https://nivesh-saral.onrender.com/api',
   INVESTMENTS: '/investments',
   TRANSACTIONS: '/transactions',
   USER: '/user',
