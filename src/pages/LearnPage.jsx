@@ -3,11 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import FinancialLesson from '../components/education/FinancialLesson';
 import BottomNav from '../components/common/BottomNav';
 import { useEducation } from '../context/EducationContext';
+import PageShell from '../components/common/PageShell';
 
-/**
- * Learn Page
- * Financial education content
- */
 const LearnPage = () => {
   const navigate = useNavigate();
   const { progress, completeLesson, isLessonCompleted } = useEducation();
@@ -17,7 +14,7 @@ const LearnPage = () => {
   const handleNavigation = (page) => {
     setActiveNav(page);
     if (page === 'home') {
-      navigate('/');
+      navigate('/home');
     } else {
       navigate(`/${page}`);
     }
@@ -102,14 +99,19 @@ const LearnPage = () => {
 
   if (selectedTopic) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="p-4">
+      <PageShell
+        title={selectedTopic.title}
+        subtitle="Quick, practical lessons to build confidence."
+        actions={(
           <button
             onClick={() => setSelectedTopic(null)}
-            className="mb-4 text-green-600 font-semibold"
+            className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
           >
-            ← Back to Topics
+            ← Back to topics
           </button>
+        )}
+      >
+        <div className="rounded-2xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-5 shadow-sm">
           <FinancialLesson
             lesson={sampleLesson}
             onComplete={() => {
@@ -120,69 +122,81 @@ const LearnPage = () => {
           />
         </div>
         <BottomNav active={activeNav} onNavigate={handleNavigation} />
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-green-600 text-white p-4">
-        <h1 className="text-xl font-bold">Learn & Grow 📚</h1>
-        <p className="text-sm opacity-90 mt-1">Simple lessons about money</p>
+    <PageShell
+      title="Learn & Grow"
+      subtitle="Bite-sized lessons that keep you confident and in control."
+      actions={(
+        <div className="rounded-full bg-white/80 border border-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900 shadow-sm">
+          {progress.completedLessons.length} / {topics.length} completed
+        </div>
+      )}
+    >
+      <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-5 shadow-[0_10px_40px_rgba(12,53,43,0.08)]">
+        <div className="flex gap-3 items-start">
+          <span className="text-2xl">💡</span>
+          <div>
+            <p className="text-sm font-semibold text-emerald-900">Why learn?</p>
+            <p className="text-sm text-emerald-900/75 mt-1">
+              The more you understand, the more confident you'll feel about investing your money safely.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="p-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-blue-800 mb-2">💡 Why Learn?</h3>
-          <p className="text-sm text-blue-700">
-            The more you understand, the more confident you'll feel about investing your money safely.
-          </p>
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-emerald-950">Popular topics</h2>
+          <span className="text-xs text-emerald-900/70">Beginner friendly</span>
         </div>
-
-        <h2 className="text-lg font-semibold mb-4">Popular Topics</h2>
         <div className="space-y-3">
           {topics.map((topic) => (
             <button
               key={topic.id}
               onClick={() => setSelectedTopic(topic)}
-              className="w-full bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-green-400 transition-all"
+              className="w-full rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-4 text-left shadow-[0_10px_32px_rgba(12,53,43,0.06)] hover:-translate-y-0.5 transition-transform"
             >
-              <div className="flex items-start">
-                <span className="text-3xl mr-3">{topic.icon}</span>
+              <div className="flex items-start gap-3">
+                <span className="text-3xl">{topic.icon}</span>
                 <div className="flex-1">
-                  <h3 className="font-semibold">{topic.title}</h3>
-                  <div className="flex items-center space-x-3 mt-2">
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                      {topic.difficulty}
-                    </span>
-                    <span className="text-xs text-gray-500">⏱️ {topic.duration}</span>
+                  <h3 className="font-semibold text-emerald-950">{topic.title}</h3>
+                  <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-emerald-900/70">
+                    <span className="rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold">{topic.difficulty}</span>
+                    <span className="rounded-full bg-white border border-emerald-100 px-2 py-1">⏱️ {topic.duration}</span>
                     {topic.completed && (
-                      <span className="text-xs text-green-600">✓ Completed</span>
+                      <span className="text-emerald-700 font-semibold">✓ Completed</span>
                     )}
                   </div>
                 </div>
-                <span className="text-gray-400">→</span>
+                <span className="text-emerald-900/50">→</span>
               </div>
             </button>
           ))}
         </div>
+      </div>
 
-        <div className="mt-6 bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-semibold mb-1">Your Progress</h3>
-              <p className="text-sm opacity-90">{progress.completedLessons.length} of {topics.length} lessons completed</p>
-            </div>
-            <span className="text-4xl">🎯</span>
+      <div className="rounded-3xl bg-gradient-to-r from-emerald-900 to-emerald-700 text-white p-6 shadow-[0_18px_60px_rgba(12,53,43,0.25)]">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold">Your progress</h3>
+            <p className="text-sm text-white/80 mt-1">{progress.completedLessons.length} of {topics.length} lessons completed</p>
           </div>
-          <div className="w-full bg-white bg-opacity-30 rounded-full h-2 mt-3">
-            <div className="bg-white h-2 rounded-full" style={{ width: `${(progress.completedLessons.length / topics.length) * 100}%` }}></div>
-          </div>
+          <span className="text-4xl">🎯</span>
+        </div>
+        <div className="mt-3 h-2 w-full rounded-full bg-white/30">
+          <div
+            className="h-2 rounded-full bg-white"
+            style={{ width: `${(progress.completedLessons.length / topics.length) * 100}%` }}
+          />
         </div>
       </div>
 
       <BottomNav active={activeNav} onNavigate={handleNavigation} />
-    </div>
+    </PageShell>
   );
 };
 

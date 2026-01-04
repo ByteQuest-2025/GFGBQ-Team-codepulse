@@ -6,25 +6,20 @@ import React from 'react';
  */
 const Welcome = ({ onNext }) => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-b from-green-50 to-white">
-      <div className="text-center space-y-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          आपका स्वागत है! 🙏
-        </h1>
-        <p className="text-lg text-gray-600">
-          Start investing with just ₹10
-        </p>
-        <p className="text-sm text-gray-500">
-          Safe • Simple • Secure
-        </p>
-        
-        <button
-          onClick={onNext}
-          className="mt-8 px-8 py-3 bg-green-600 text-white rounded-lg font-semibold"
-        >
-          Get Started
-        </button>
-      </div>
+    <div className="rounded-3xl border border-emerald-100 bg-white/90 backdrop-blur-sm p-10 text-center shadow-[0_18px_60px_rgba(12,53,43,0.12)]">
+      <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-800 px-3 py-1 text-xs font-semibold">
+        Safe • Simple • Secure
+      </p>
+      <h1 className="mt-4 text-3xl font-bold text-emerald-950">आपका स्वागत है! 🙏</h1>
+      <p className="mt-3 text-lg text-emerald-900/80">Start investing with just ₹10</p>
+      <p className="text-sm text-emerald-900/70">Bank-grade security, designed for everyone.</p>
+
+      <button
+        onClick={onNext}
+        className="mt-8 w-full rounded-full bg-emerald-900 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors"
+      >
+        Get started
+      </button>
     </div>
   );
 };

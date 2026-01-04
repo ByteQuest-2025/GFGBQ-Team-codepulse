@@ -12,6 +12,8 @@ import LearnPage from './pages/LearnPage';
 import PassbookPage from './pages/PassbookPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import LandingPage from './pages/LandingPage';
 
 // Loading Component
 import LoadingSpinner from './components/common/LoadingSpinner';
@@ -53,6 +55,18 @@ function AppRouter() {
   return (
     <Router>
       <Routes>
+        {/* Public landing at root */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? isOnboardingComplete
+                ? <Navigate to="/home" replace />
+                : <Navigate to="/onboarding" replace />
+              : <LandingPage />
+          }
+        />
+
         {/* Onboarding Route */}
         <Route
           path="/onboarding"
@@ -60,7 +74,7 @@ function AppRouter() {
             !isAuthenticated ? (
               <Navigate to="/login" replace />
             ) : isOnboardingComplete ? (
-              <Navigate to="/" replace />
+              <Navigate to="/home" replace />
             ) : (
               <OnboardingPage onComplete={handleOnboardingComplete} />
             )
@@ -73,15 +87,30 @@ function AppRouter() {
           element={
             isAuthenticated
               ? isOnboardingComplete
-                ? <Navigate to="/" replace />
+                ? <Navigate to="/home" replace />
                 : <Navigate to="/onboarding" replace />
               : <LoginPage />
           }
         />
 
+        {/* Public Landing fallback */}
+        <Route path="/landing" element={<LandingPage />} />
+
+        {/* Signup Route */}
+        <Route
+          path="/signup"
+          element={
+            isAuthenticated
+              ? isOnboardingComplete
+                ? <Navigate to="/home" replace />
+                : <Navigate to="/onboarding" replace />
+              : <SignupPage />
+          }
+        />
+
         {/* Protected Routes */}
         <Route
-          path="/"
+          path="/home"
           element={
             <ProtectedRoute>
               <HomePage />
@@ -122,7 +151,7 @@ function AppRouter() {
         />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

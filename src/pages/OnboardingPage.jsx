@@ -30,8 +30,15 @@ const OnboardingPage = ({ onComplete }) => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {renderStep()}
+    <div className="relative min-h-screen bg-[#f4f1e6] text-emerald-950">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute top-[-15%] left-[5%] h-56 w-56 rounded-full bg-emerald-200/30 blur-3xl" />
+        <div className="absolute top-[25%] right-[0%] h-56 w-56 rounded-full bg-amber-200/30 blur-3xl" />
+        <div className="absolute bottom-[-10%] left-[30%] h-64 w-64 rounded-full bg-emerald-100/30 blur-3xl" />
+      </div>
+      <div className="relative mx-auto max-w-xl px-4 py-10">
+        {renderStep()}
+      </div>
     </div>
   );
 };

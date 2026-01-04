@@ -3,17 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
-const LoginPage = () => {
+const SignupPage = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated, isOnboardingComplete, isLoading } = useApp();
+  const { register, isAuthenticated, isOnboardingComplete, isLoading } = useApp();
+  const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  if (isLoading) {
-    return <LoadingSpinner message="Loading..." />;
-  }
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -22,23 +20,38 @@ const LoginPage = () => {
     }
   }, [isAuthenticated, isOnboardingComplete, navigate]);
 
+  if (isLoading) {
+    return <LoadingSpinner message="Loading..." />;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
 
-    if (!phoneNumber.trim() || !password.trim()) {
-      setError('Please enter your phone number and password.');
+    if (!name.trim() || !phoneNumber.trim() || !password.trim()) {
+      setError('Please fill all required fields.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
       setIsSubmitting(false);
       return;
     }
 
     try {
-      await login({ phoneNumber: phoneNumber.trim(), password: password.trim() });
-      const next = isOnboardingComplete ? '/' : '/onboarding';
-      navigate(next, { replace: true });
+      await register({ name: name.trim(), phoneNumber: phoneNumber.trim(), password: password.trim() });
+      navigate('/onboarding', { replace: true });
     } catch (err) {
-      setError(err.message || 'Unable to login. Please try again.');
+      setError(err.message || 'Unable to create account. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -49,13 +62,24 @@ const LoginPage = () => {
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 text-green-700 text-2xl mb-3">
-            💸
+            ✨
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome to MicroInvest</h1>
-          <p className="text-sm text-gray-500 mt-1">Sign in to continue your journey</p>
+          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
+          <p className="text-sm text-gray-500 mt-1">Start your investing journey in minutes</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Full Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="e.g., Priya Sharma"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
             <input
@@ -74,7 +98,18 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter your password"
+              placeholder="At least 6 characters"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Re-enter your password"
             />
           </div>
 
@@ -85,18 +120,18 @@ const LoginPage = () => {
             className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            {isSubmitting ? 'Creating account...' : 'Sign up'}
           </button>
 
           <p className="text-sm text-center text-gray-500">
-            New here?{' '}
-            <Link to="/signup" className="text-green-700 font-semibold hover:underline">
-              Create an account
+            Already have an account?{' '}
+            <Link to="/login" className="text-green-700 font-semibold hover:underline">
+              Sign in
             </Link>
           </p>
 
           <p className="text-xs text-center text-gray-400">
-            By continuing you agree to our Terms & Privacy.
+            By signing up you agree to our Terms & Privacy.
           </p>
         </form>
       </div>
@@ -104,4 +139,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

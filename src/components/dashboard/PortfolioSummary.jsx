@@ -13,43 +13,49 @@ const PortfolioSummary = ({ portfolio }) => {
   const gainPercentage = ((totalGain / totalInvested) * 100).toFixed(2);
 
   return (
-    <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-lg p-6 text-white">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Your Portfolio</h2>
-        <span className="text-sm opacity-90">Updated Now</span>
-      </div>
-
-      <div className="mb-4">
-        <div className="text-sm opacity-90 mb-1">Total Value</div>
-        <div className="text-3xl font-bold">₹{totalCurrent.toFixed(2)}</div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white bg-opacity-20 rounded-lg p-3">
-          <div className="text-xs opacity-90 mb-1">Invested</div>
-          <div className="text-lg font-semibold">₹{totalInvested}</div>
+    <div className="rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm p-6 shadow-[0_12px_40px_rgba(12,53,43,0.1)]">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-emerald-800">Portfolio overview</p>
+          <p className="text-xs text-emerald-900/70">Updated now</p>
         </div>
-        
-        <div className="bg-white bg-opacity-20 rounded-lg p-3">
-          <div className="text-xs opacity-90 mb-1">Returns</div>
-          <div className="text-lg font-semibold">
-            ₹{totalGain.toFixed(2)} ({gainPercentage > 0 ? '+' : ''}{gainPercentage}%)
+        <span className="rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-xs font-semibold">Live</span>
+      </div>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-3">
+        <div className="sm:col-span-2 rounded-xl bg-emerald-950 text-white p-5 shadow-[0_10px_40px_rgba(12,53,43,0.35)]">
+          <p className="text-xs text-white/70">Total value</p>
+          <p className="mt-2 text-3xl font-bold">₹{totalCurrent.toFixed(2)}</p>
+          <p className="mt-2 text-sm text-emerald-100">Returns: ₹{totalGain.toFixed(2)} ({gainPercentage > 0 ? '+' : ''}{gainPercentage}%)</p>
+          <div className="mt-4 flex gap-2 text-xs text-white/70">
+            <span className="rounded-full bg-white/10 px-3 py-1">Liquid ready</span>
+            <span className="rounded-full bg-white/10 px-3 py-1">Risk-checked</span>
+          </div>
+        </div>
+        <div className="grid grid-rows-2 gap-3">
+          <div className="rounded-xl border border-emerald-100 bg-white p-4 shadow-sm">
+            <p className="text-xs text-emerald-900/70">Invested</p>
+            <p className="mt-1 text-xl font-semibold text-emerald-950">₹{totalInvested}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-100 bg-white p-4 shadow-sm">
+            <p className="text-xs text-emerald-900/70">Growth</p>
+            <p className={`mt-1 text-xl font-semibold ${totalGain >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>₹{totalGain.toFixed(2)}</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex space-x-2">
-        <button 
+      <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <button
           onClick={() => navigate('/invest')}
-          className="flex-1 bg-white text-green-600 py-2 rounded-lg font-semibold text-sm hover:bg-green-50 transition-all"
+          className="w-full rounded-full bg-emerald-900 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors"
         >
-          + Add Money
+          + Add money
         </button>
-        <button 
+        <button
           onClick={() => navigate('/passbook')}
-          className="flex-1 bg-white bg-opacity-20 py-2 rounded-lg font-semibold text-sm hover:bg-white hover:bg-opacity-30 transition-all"
+          className="w-full rounded-full border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
         >
-          View Details
+          View passbook
         </button>
       </div>
     </div>
