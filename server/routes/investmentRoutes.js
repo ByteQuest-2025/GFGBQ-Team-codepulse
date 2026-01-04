@@ -85,6 +85,76 @@ router.post('/', async (req, res) => {
   }
 });
 
+// @desc    Withdraw funds from a specific investment
+// @route   POST /api/investments/:id/withdraw
+// @access  Private
+router.post('/:id/withdraw', async (req, res) => {
+  const { amount } = req.body;
+
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ message: 'Withdrawal amount must be positive' });
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const investment = await Investment.findOne({ _id: req.params.id, userId: req.user._id }).session(session);
+    if (!investment) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'Investment not found' });
+    }
+
+    if (investment.amount < amount) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: 'Insufficient investment balance for withdrawal' });
+    }
+
+    const user = await User.findById(req.user._id).session(session);
+    if (!user) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Credit user wallet and reduce investment principal
+    user.balance += amount;
+    investment.amount -= amount;
+    if (investment.amount === 0) {
+      investment.status = 'completed';
+    }
+
+    await user.save({ session });
+    await investment.save({ session });
+
+    const transaction = new Transaction({
+      userId: req.user._id,
+      type: 'withdrawal',
+      amount: amount, // positive amount; interpret as credit back to user
+      description: `Withdrawal from ${investment.investmentType || 'investment'}`,
+      referenceId: investment._id,
+      status: 'completed',
+    });
+    await transaction.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({
+      investment,
+      balance: user.balance,
+      transaction,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error(error);
+    res.status(500).json({ message: 'Server error during withdrawal' });
+  }
+});
+
 
 // @desc    Update an investment (e.g., status, return) - requires careful logic
 // @route   PUT /api/investments/:id

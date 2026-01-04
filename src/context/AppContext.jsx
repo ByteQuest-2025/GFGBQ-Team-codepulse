@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { storage, STORAGE_KEYS } from '../utils/storage';
 import { authService } from '../services/authService';
 import { translate } from '../i18n/translations';
@@ -26,13 +26,26 @@ export const AppProvider = ({ children }) => {
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const userId = user?._id || null;
+  const scopedKeys = useMemo(() => ({
+    language: `${STORAGE_KEYS.LANGUAGE}_${userId || 'guest'}`,
+    onboarding: `${STORAGE_KEYS.ONBOARDING_COMPLETE}_${userId || 'guest'}`,
+  }), [userId]);
+
   // Load initial state from storage and refresh profile if token exists
   useEffect(() => {
     const loadInitialState = async () => {
       const savedUser = normalizeUser(storage.get(STORAGE_KEYS.USER));
       const savedToken = storage.get(STORAGE_KEYS.AUTH_TOKEN);
-      const savedLanguage = storage.get(STORAGE_KEYS.LANGUAGE, 'en');
-      const onboardingComplete = storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
+
+      // Determine scoped keys based on saved user id (or guest)
+      const initialUserId = savedUser?._id || 'guest';
+      const initialLangKey = `${STORAGE_KEYS.LANGUAGE}_${initialUserId}`;
+      const initialOnboardKey = `${STORAGE_KEYS.ONBOARDING_COMPLETE}_${initialUserId}`;
+
+      const savedLanguage = storage.get(initialLangKey, 'en');
+      // Support legacy global onboarding flag as fallback
+      const onboardingComplete = storage.get(initialOnboardKey, storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false));
 
       if (savedUser) setUser(savedUser);
       if (savedToken) setAuthToken(savedToken);
@@ -75,8 +88,15 @@ export const AppProvider = ({ children }) => {
     storage.set(STORAGE_KEYS.USER, normalized);
     storage.set(STORAGE_KEYS.AUTH_TOKEN, data.token);
 
-    // Preserve previous onboarding state or default to false
-    const onboardingComplete = storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
+    const langKey = `${STORAGE_KEYS.LANGUAGE}_${normalized._id}`;
+    const onboardKey = `${STORAGE_KEYS.ONBOARDING_COMPLETE}_${normalized._id}`;
+
+    // Preserve previous onboarding state for this user or default to false
+    // Fallback to legacy onboarding flag if scoped one missing
+    const onboardingComplete = storage.get(onboardKey, storage.get(STORAGE_KEYS.ONBOARDING_COMPLETE, false));
+    const savedLanguage = storage.get(langKey, storage.get(STORAGE_KEYS.LANGUAGE, 'en'));
+
+    setLanguage(savedLanguage);
     setIsOnboardingComplete(onboardingComplete);
 
     return normalized;
@@ -91,7 +111,11 @@ export const AppProvider = ({ children }) => {
     setAuthToken(data.token);
     storage.set(STORAGE_KEYS.USER, normalized);
     storage.set(STORAGE_KEYS.AUTH_TOKEN, data.token);
-    storage.set(STORAGE_KEYS.ONBOARDING_COMPLETE, false);
+
+    // Reset onboarding for this new user; language defaults to 'en'
+    storage.set(`${STORAGE_KEYS.ONBOARDING_COMPLETE}_${normalized._id}`, false);
+    storage.set(`${STORAGE_KEYS.LANGUAGE}_${normalized._id}`, 'en');
+    setLanguage('en');
     setIsOnboardingComplete(false);
 
     return normalized;
@@ -100,7 +124,7 @@ export const AppProvider = ({ children }) => {
   // Update language
   const updateLanguage = (lang) => {
     setLanguage(lang);
-    storage.set(STORAGE_KEYS.LANGUAGE, lang);
+    storage.set(scopedKeys.language, lang);
   };
 
   const t = (key, fallback, vars) => translate(language, key, fallback, vars);
@@ -108,16 +132,24 @@ export const AppProvider = ({ children }) => {
   // Complete onboarding
   const completeOnboarding = () => {
     setIsOnboardingComplete(true);
+    storage.set(scopedKeys.onboarding, true);
+    // Also write legacy key for backward compatibility
     storage.set(STORAGE_KEYS.ONBOARDING_COMPLETE, true);
   };
 
   // Logout
   const logout = () => {
+    const currentUserId = user?._id;
     setUser(null);
     setAuthToken(null);
     storage.remove(STORAGE_KEYS.USER);
     storage.remove(STORAGE_KEYS.AUTH_TOKEN);
-    storage.remove(STORAGE_KEYS.ONBOARDING_COMPLETE);
+    if (currentUserId) {
+      storage.remove(`${STORAGE_KEYS.ONBOARDING_COMPLETE}_${currentUserId}`);
+      storage.remove(`${STORAGE_KEYS.LANGUAGE}_${currentUserId}`);
+    }
+    storage.remove(scopedKeys.onboarding);
+    storage.remove(scopedKeys.language);
     setIsOnboardingComplete(false);
   };
 

@@ -11,7 +11,7 @@ import BottomNav from '../components/common/BottomNav';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { getPortfolioSummary } = useInvestment();
-  const { user, language, logout, t } = useApp();
+  const { user, language, updateLanguage, logout, t } = useApp();
   const [activeNav, setActiveNav] = React.useState('profile');
 
   const summary = getPortfolioSummary();
@@ -33,15 +33,33 @@ const ProfilePage = () => {
   };
 
   const menuItems = [
-    { icon: '👤', title: t('profile.menu.personal', 'Personal Information'), action: 'profile' },
-    { icon: '🔔', title: t('profile.menu.notifications', 'Notifications'), badge: '2', action: 'notifications' },
     { icon: '🌐', title: t('profile.menu.language', 'Change Language'), action: 'language' },
-    { icon: '💳', title: t('profile.menu.payment', 'Payment Methods'), action: 'payment' },
-    { icon: '📄', title: t('profile.menu.documents', 'Documents & KYC'), action: 'documents' },
+    { icon: '💳', title: t('profile.menu.payment', 'Payment Methods'), action: 'payment', tag: t('profile.menu.soon', 'Coming soon') },
+    { icon: '📄', title: t('profile.menu.documents', 'Documents & KYC'), action: 'documents', tag: t('profile.menu.soon', 'Coming soon') },
     { icon: '❓', title: t('profile.menu.help', 'Help & Support'), action: 'help' },
-    { icon: '📜', title: t('profile.menu.legal', 'Terms & Privacy'), action: 'legal' },
-    { icon: '⭐', title: t('profile.menu.rate', 'Rate Our App'), action: 'rate' }
+    { icon: '📜', title: t('profile.menu.legal', 'Terms & Privacy'), action: 'legal' }
   ];
+
+  const handleMenuAction = (action) => {
+    switch (action) {
+      case 'language': {
+        const next = language === 'en' ? 'hi' : 'en';
+        updateLanguage(next);
+        alert(t('profile.language.updated', 'Language set to {lang}', { lang: next === 'en' ? 'English' : 'Hindi' }));
+        break;
+      }
+      case 'help': {
+        navigate('/support');
+        break;
+      }
+      case 'legal': {
+        navigate('/terms');
+        break;
+      }
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -59,6 +77,27 @@ const ProfilePage = () => {
       </div>
 
       <div className="p-4">
+        {/* Personal info */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-2xl">👤</div>
+            <div>
+              <p className="text-sm text-gray-500">{t('profile.label.name', 'Name')}</p>
+              <p className="font-semibold text-emerald-950">{userInfo.name}</p>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-emerald-900/80">
+            <div>
+              <p className="text-gray-500">{t('profile.label.phone', 'Phone')}</p>
+              <p className="font-semibold text-emerald-950">{userInfo.phone}</p>
+            </div>
+            <div>
+              <p className="text-gray-500">{t('profile.label.language', 'Language')}</p>
+              <p className="font-semibold text-emerald-950">{userInfo.language || language}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-lg p-3 text-center border border-gray-200">
@@ -81,15 +120,16 @@ const ProfilePage = () => {
             <button
               key={index}
               className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-all"
+              onClick={() => handleMenuAction(item.action)}
             >
               <div className="flex items-center">
                 <span className="text-2xl mr-3">{item.icon}</span>
                 <span className="font-medium">{item.title}</span>
               </div>
               <div className="flex items-center">
-                {item.badge && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full mr-2">
-                    {item.badge}
+                {item.tag && (
+                  <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full mr-2 font-semibold">
+                    {item.tag}
                   </span>
                 )}
                 <span className="text-gray-400">→</span>

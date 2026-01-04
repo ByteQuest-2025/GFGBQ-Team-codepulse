@@ -16,6 +16,7 @@ const PassbookPage = () => {
   const { t } = useApp();
   const [activeNav, setActiveNav] = React.useState('passbook');
   const [filter, setFilter] = React.useState('all'); // Add filter state
+  const [exporting, setExporting] = React.useState(false);
 
   // Auto-refresh for updated values
   React.useEffect(() => {
@@ -38,6 +39,37 @@ const PassbookPage = () => {
   };
 
   const summary = getPortfolioSummary();
+
+  const downloadCSV = (rows) => {
+    const headers = ['Date', 'Type', 'Investment', 'Amount', 'Status'];
+    const lines = rows.map((t) => [
+      new Date(t.date).toISOString(),
+      t.type,
+      t.investment || t.investmentName || '',
+      t.amount,
+      t.status,
+    ]);
+    const csv = [headers, ...lines]
+      .map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `passbook_${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = () => {
+    setExporting(true);
+    try {
+      downloadCSV(filteredTransactions);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (isLoading) {
     return <LoadingSpinner message={t('passbook.loading', 'Loading transactions...')} />;
@@ -64,6 +96,7 @@ const PassbookPage = () => {
     if (filter === 'all') return true;
     if (filter === 'investments') return transaction.type === 'credit';
     if (filter === 'interest') return transaction.type === 'interest';
+    if (filter === 'withdrawals') return transaction.type === 'debit' || transaction.type === 'withdrawal';
     return true;
   });
 
@@ -73,10 +106,11 @@ const PassbookPage = () => {
       subtitle={t('passbook.subtitle', 'All transactions in one calm, clear view.')}
       actions={(
         <button
-          className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors"
-          onClick={() => setFilter('all')}
+          className="rounded-full border border-emerald-200 bg-white px-3 py-2 text-sm font-semibold text-emerald-900 hover:border-emerald-300 transition-colors disabled:opacity-60"
+          onClick={handleExport}
+          disabled={filteredTransactions.length === 0 || exporting}
         >
-          📄 {t('passbook.export', 'Export')}
+          {exporting ? '…' : '📄'} {t('passbook.export', 'Export')}
         </button>
       )}
     >
@@ -97,7 +131,8 @@ const PassbookPage = () => {
         {[
           { id: 'all', label: t('passbook.filter.all', 'All') },
           { id: 'investments', label: t('passbook.filter.investments', 'Investments') },
-          { id: 'interest', label: t('passbook.filter.interest', 'Interest') }
+          { id: 'interest', label: t('passbook.filter.interest', 'Interest') },
+          { id: 'withdrawals', label: t('passbook.filter.withdrawals', 'Withdrawals') },
         ].map((item) => (
           <button
             key={item.id}
@@ -154,10 +189,6 @@ const PassbookPage = () => {
           ))
         )}
       </div>
-
-      <button className="w-full rounded-full bg-emerald-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 hover:bg-emerald-800 transition-colors">
-        📄 {t('passbook.download', 'Download statement')}
-      </button>
 
       <BottomNav active={activeNav} onNavigate={handleNavigation} />
     </PageShell>

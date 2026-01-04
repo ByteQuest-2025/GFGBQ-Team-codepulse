@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { investmentService } from '../services/investmentService';
 import { transactionService } from '../services/transactionService';
 import { storage, STORAGE_KEYS } from '../utils/storage';
 import { useApp } from './AppContext';
 
 const InvestmentContext = createContext();
+
+// Demo helper: ensure we accrue at least this many days per tick so UI shows growth quickly
+const DEMO_MIN_DAYS_PER_TICK = 1; // 1 day of interest each accrual pass
 
 /**
  * Investment Context Provider
@@ -26,10 +29,83 @@ export const InvestmentProvider = ({ children }) => {
     };
   }, [user?._id]);
 
+  const accrueReturns = useCallback((portfolioSnapshot = portfolio, transactionsSnapshot = transactions, persist = true) => {
+    const now = Date.now();
+    let portfolioChanged = false;
+    let transactionsChanged = false;
+
+    const updatedPortfolio = portfolioSnapshot.map((investment) => {
+      const rate = investment.returns ?? 0;
+      if (rate <= 0 || investment.status !== 'active') return investment;
+
+      const lastAccrued = new Date(investment.lastAccrued || investment.startDate).getTime();
+      const elapsedDays = (now - lastAccrued) / (1000 * 60 * 60 * 24);
+      // Simulate minimum elapsed time so demo users see growth quickly
+      const effectiveDays = Math.max(elapsedDays, DEMO_MIN_DAYS_PER_TICK);
+      if (effectiveDays <= 0) return investment;
+
+      const interest = investment.currentValue * (rate / 100) * (effectiveDays / 365);
+      if (interest <= 0) return investment;
+
+      portfolioChanged = true;
+
+      const updatedInvestment = {
+        ...investment,
+        currentValue: Math.round((investment.currentValue + interest) * 100) / 100,
+        lastAccrued: new Date(now).toISOString(),
+      };
+
+      // Record an interest transaction if meaningful (> ₹0.01)
+      if (interest > 0.01) {
+        const interestTxn = {
+          id: `${updatedInvestment.id}_interest_${Math.floor(now)}`,
+          type: 'interest',
+          amount: Math.round(interest * 100) / 100,
+          investmentId: updatedInvestment.id,
+          investmentName: updatedInvestment.name,
+          date: new Date(now).toISOString(),
+          status: 'completed',
+          title: 'Interest credited',
+          investment: updatedInvestment.name,
+        };
+        transactionsSnapshot = [interestTxn, ...transactionsSnapshot];
+        transactionsChanged = true;
+      }
+
+      return updatedInvestment;
+    });
+
+    if (portfolioChanged && persist) {
+      setPortfolio(updatedPortfolio);
+      storage.set(userScopedKeys.portfolioKey, updatedPortfolio);
+    }
+
+    if (transactionsChanged && persist) {
+      setTransactions(transactionsSnapshot);
+      storage.set(userScopedKeys.transactionsKey, transactionsSnapshot);
+    }
+
+    // When not persisting (initial load), update state and storage once
+    if (persist === false && (portfolioChanged || transactionsChanged)) {
+      setPortfolio(updatedPortfolio);
+      storage.set(userScopedKeys.portfolioKey, updatedPortfolio);
+      setTransactions(transactionsSnapshot);
+      storage.set(userScopedKeys.transactionsKey, transactionsSnapshot);
+    }
+
+    return { updatedPortfolio, transactionsSnapshot };
+  }, [portfolio, transactions, userScopedKeys.portfolioKey, userScopedKeys.transactionsKey]);
+
   // Load initial data
   useEffect(() => {
     loadInitialData();
   }, [userScopedKeys]);
+
+  // Keep accruing returns periodically across the app (not just on Passbook page)
+  useEffect(() => {
+    const id = setInterval(() => accrueReturns(), 10000); // every 10s
+    return () => clearInterval(id);
+  }, [accrueReturns]);
 
   const loadInitialData = async () => {
     setIsLoading(true);
@@ -40,6 +116,9 @@ export const InvestmentProvider = ({ children }) => {
       
       setPortfolio(savedPortfolio);
       setTransactions(savedTransactions);
+
+      // Accrue returns on load so UI shows up-to-date growth
+      accrueReturns(savedPortfolio, savedTransactions, false);
 
       // Load investment options
       const options = await investmentService.getInvestmentOptions();
@@ -58,6 +137,7 @@ export const InvestmentProvider = ({ children }) => {
         id: Date.now(),
         ...investmentData,
         startDate: new Date().toISOString(),
+        lastAccrued: new Date().toISOString(),
         currentValue: investmentData.amount,
         status: 'active'
       };
@@ -88,6 +168,9 @@ export const InvestmentProvider = ({ children }) => {
       const newTransaction = {
         id: Date.now(),
         ...transactionData,
+        // Ensure UI-friendly labels
+        investment: transactionData.investmentName || transactionData.investment || transactionData.description || 'Investment',
+        title: transactionData.title || transactionData.investmentName || transactionData.description || 'Transaction',
         date: new Date().toISOString(),
         status: 'completed'
       };
@@ -121,25 +204,43 @@ export const InvestmentProvider = ({ children }) => {
 
   // Update investment value (can be called periodically)
   const updateInvestmentValues = () => {
-    const updatedPortfolio = portfolio.map(investment => {
-      // Calculate compound interest based on actual days elapsed
-      const daysSinceStart = Math.floor(
-        (Date.now() - new Date(investment.startDate).getTime()) / (1000 * 60 * 60 * 24)
-      );
-      
-      // Compound interest formula: A = P(1 + r/100)^t
-      // where t is time in years (daysSinceStart / 365)
-      const yearsFraction = daysSinceStart / 365;
-      const currentValue = investment.amount * Math.pow(1 + investment.returns / 100, yearsFraction);
-      
-      return {
-        ...investment,
-        currentValue: Math.round(currentValue * 100) / 100
-      };
-    });
+    accrueReturns();
+  };
 
+  // Withdraw from a specific investment (client-side simulation)
+  const withdrawFromInvestment = async (investmentId, amount) => {
+    if (!amount || amount <= 0) {
+      throw new Error('Withdrawal amount must be positive');
+    }
+
+    const investment = portfolio.find((inv) => inv.id === investmentId);
+    if (!investment) {
+      throw new Error('Investment not found');
+    }
+    if (investment.currentValue < amount) {
+      throw new Error('Insufficient funds in this investment');
+    }
+
+    const updatedInvestment = {
+      ...investment,
+      currentValue: Math.round((investment.currentValue - amount) * 100) / 100,
+      amount: Math.round((investment.amount - amount) * 100) / 100,
+    };
+
+    const updatedPortfolio = portfolio.map((inv) => (inv.id === investmentId ? updatedInvestment : inv));
     setPortfolio(updatedPortfolio);
     storage.set(userScopedKeys.portfolioKey, updatedPortfolio);
+
+    await addTransaction({
+      type: 'debit',
+      amount,
+      investmentId,
+      investmentName: investment.name,
+      description: `Withdrawal from ${investment.name}`,
+      title: 'Withdrawal',
+    });
+
+    return updatedInvestment;
   };
 
   const value = {
@@ -151,6 +252,7 @@ export const InvestmentProvider = ({ children }) => {
     addTransaction,
     getPortfolioSummary,
     updateInvestmentValues,
+    withdrawFromInvestment,
     refreshData: loadInitialData
   };
 

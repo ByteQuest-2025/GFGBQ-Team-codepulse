@@ -14,6 +14,8 @@ import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import LandingPage from './pages/LandingPage';
+import TermsPage from './pages/TermsPage';
+import SupportPage from './pages/SupportPage';
 
 // Loading Component
 import LoadingSpinner from './components/common/LoadingSpinner';
@@ -146,6 +148,24 @@ function AppRouter() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/terms"
+          element={
+            <ProtectedRoute>
+              <TermsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/support"
+          element={
+            <ProtectedRoute>
+              <SupportPage />
             </ProtectedRoute>
           }
         />
